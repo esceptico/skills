@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the structure, watermarks, and completion claims of a development ledger."""
+"""Validate a compact development ledger."""
 
 from __future__ import annotations
 
@@ -9,7 +9,22 @@ import re
 import subprocess
 
 
-REQUIRED_HEADINGS = {
+V2_HEADINGS = {
+    "README.md": [
+        "## Status",
+        "## Original task",
+        "## Amendments",
+        "## Current synthesis",
+        "## Decisions",
+        "## Open questions",
+        "## Next action",
+    ],
+    "research.md": ["## Surface research", "## Consolidated findings", "## Conflicts and gaps"],
+    "implementation.md": ["## Intended outcome", "## Checklist", "## Notes"],
+    "verification.md": ["## Status", "## Evidence", "## Failures and gaps", "## Outcome"],
+}
+
+V1_HEADINGS = {
     "README.md": ["## Status snapshot", "## Executive synthesis", "## Next action", "## Lifecycle files"],
     "01-intent.md": ["## Original request", "## Amendments", "## Interpreted objective", "## Constraints", "## Success conditions"],
     "02-research.md": ["## Research inbox", "## Surface research passes", "## Consolidated findings", "## Conflicts and uncertainties"],
@@ -20,7 +35,7 @@ REQUIRED_HEADINGS = {
     "07-verification.md": ["## Verification status", "## Required evidence", "## Failures and diagnosis", "## Remaining gaps", "## Final outcome"],
 }
 
-ALLOWED_STATUSES = {
+ALLOWED_STATES = {
     "researching",
     "needs-input",
     "ready-for-decision",
@@ -67,7 +82,29 @@ def main() -> int:
     if not ledger.is_dir():
         raise SystemExit(f"Ledger directory not found: {ledger}")
 
-    for filename, headings in REQUIRED_HEADINGS.items():
+    readme_path = ledger / "README.md"
+    readme_preview = readme_path.read_text(encoding="utf-8") if readme_path.is_file() else ""
+    if "<!-- development-ledger:v2 -->" in readme_preview:
+        required_headings = V2_HEADINGS
+        state_label = "State"
+        intent_file = "README.md"
+        implementation_file = "implementation.md"
+        verification_file = "verification.md"
+    elif "<!-- development-ledger:v1 -->" in readme_preview:
+        required_headings = V1_HEADINGS
+        state_label = "Ledger status"
+        intent_file = "01-intent.md"
+        implementation_file = "06-implementation.md"
+        verification_file = "07-verification.md"
+    else:
+        required_headings = V2_HEADINGS
+        state_label = "State"
+        intent_file = "README.md"
+        implementation_file = "implementation.md"
+        verification_file = "verification.md"
+        errors.append("README.md: missing development-ledger:v1 or v2 marker")
+
+    for filename, headings in required_headings.items():
         path = ledger / filename
         if not path.is_file():
             errors.append(f"missing required file: {filename}")
@@ -77,51 +114,45 @@ def main() -> int:
         for heading in headings:
             if heading not in text:
                 errors.append(f"{filename}: missing heading beginning with '{heading}'")
-        line_count = len(text.splitlines())
-        limit = 120 if filename == "README.md" else 250
-        if line_count > 500:
-            errors.append(f"{filename}: {line_count} lines; must compress or split supporting evidence")
-        elif line_count > limit:
-            warnings.append(f"{filename}: {line_count} lines; consolidation recommended above {limit}")
+        lines = len(text.splitlines())
+        limit = 160 if filename == "README.md" else 300
+        if lines > 500:
+            errors.append(f"{filename}: {lines} lines; move bulky evidence to an appendix")
+        elif lines > limit:
+            warnings.append(f"{filename}: {lines} lines; consolidation recommended above {limit}")
         if re.search(r"\{\{[A-Z0-9_]+\}\}", text):
             errors.append(f"{filename}: unresolved template token")
 
     readme = contents.get("README.md", "")
-    if "<!-- development-ledger:v1 -->" not in readme:
-        errors.append("README.md: missing development-ledger marker")
 
-    status = table_value(readme, "Ledger status")
-    if status not in ALLOWED_STATUSES:
-        errors.append(f"README.md: invalid or missing Ledger status: {status!r}")
+    state = table_value(readme, state_label)
+    if state not in ALLOWED_STATES:
+        errors.append(f"README.md: invalid or missing {state_label}: {state!r}")
     for label in ("Active phase", "Last updated", "Last consolidated", "Codebase revision", "Sources checked through"):
         if not table_value(readme, label):
             errors.append(f"README.md: missing watermark '{label}'")
+    if "INTENT_NOT_CAPTURED" in contents.get(intent_file, ""):
+        errors.append(f"{intent_file}: original user task has not been captured")
 
-    intent = contents.get("01-intent.md", "")
-    if "INTENT_NOT_CAPTURED" in intent:
-        errors.append("01-intent.md: original user intent has not been captured")
-
-    implementation = contents.get("06-implementation.md", "")
-    verification = contents.get("07-verification.md", "")
+    implementation = contents.get(implementation_file, "")
+    verification = contents.get(verification_file, "")
     checked_items = len(re.findall(r"^- \[[xX]\]", implementation, re.MULTILINE))
-    verification_rows = re.findall(r"^\|\s*V-[^\n]+", verification, re.MULTILINE)
-    pass_rows = [row for row in verification_rows if re.search(r"\|\s*pass\s*\|", row, re.IGNORECASE)]
-    nonpass_rows = [row for row in verification_rows if re.search(r"\|\s*(fail|blocked|not-run)\s*\|", row, re.IGNORECASE)]
+    evidence_rows = re.findall(r"^\|\s*V-[^\n]+", verification, re.MULTILINE)
+    pass_rows = [row for row in evidence_rows if re.search(r"\|\s*pass(?: with [^|]+)?\s*\|", row, re.IGNORECASE)]
+    nonpass_rows = [row for row in evidence_rows if re.search(r"\|\s*(fail|blocked|not-run|pending)\s*\|", row, re.IGNORECASE)]
 
-    if checked_items and not verification_rows:
+    if checked_items and not evidence_rows:
         warnings.append("implementation has checked items but verification has no evidence rows")
-    if status == "complete":
+    if state == "complete":
         if not pass_rows:
             errors.append("ledger is complete but no passing verification evidence is recorded")
         if nonpass_rows:
-            warnings.append("ledger is complete with non-passing verification rows; confirm accepted gaps are explicit")
+            warnings.append("ledger is complete with non-passing evidence; document accepted gaps")
 
     recorded_revision = table_value(readme, "Codebase revision")
     current_revision = git_head(Path(args.repo).resolve())
     if recorded_revision and recorded_revision != "unknown" and current_revision and recorded_revision != current_revision:
-        warnings.append(
-            f"codebase revision drift: ledger={recorded_revision[:12]} current={current_revision[:12]}"
-        )
+        warnings.append(f"codebase revision drift: ledger={recorded_revision[:12]} current={current_revision[:12]}")
 
     for warning in warnings:
         print(f"WARNING: {warning}")

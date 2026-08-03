@@ -1,4 +1,4 @@
 interface:
   display_name: "Development Ledger"
-  short_description: "Research-to-verification development continuity"
-  default_prompt: "Use $development-ledger to create or update a structured development ledger for this task."
+  short_description: "Compact research-to-verification task continuity"
+  default_prompt: "Use $development-ledger to create or update a compact, evidence-backed ledger for this task."

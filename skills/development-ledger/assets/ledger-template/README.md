@@ -1,12 +1,12 @@
-<!-- development-ledger:v1 -->
+<!-- development-ledger:v2 -->
 
 # {{TITLE}}
 
-## Status snapshot
+## Status
 
 | Field | Value |
 | --- | --- |
-| Ledger status | researching |
+| State | researching |
 | Active phase | research |
 | Created | {{CREATED_AT}} |
 | Last updated | {{UPDATED_AT}} |
@@ -15,30 +15,32 @@
 | Codebase revision | {{REVISION}} |
 | Sources checked through | code: {{REVISION}}; web: not checked |
 
-## Executive synthesis
+## Original task — verbatim
+
+{{INTENT}}
+
+## Amendments — verbatim
+
+None.
+
+## Current synthesis
 
 Research has not yet been consolidated.
 
-## Current decisions
+## Decisions
 
-No decisions adopted yet. See [05-decisions.md](05-decisions.md).
+- None adopted.
 
 ## Open questions
 
-See [03-questions.md](03-questions.md).
+- None recorded.
 
 ## Next action
 
-Capture the original request and begin the first scoped research pass.
+Begin the first scoped research pass.
 
-## Lifecycle files
+## Details
 
-| File | Purpose |
-| --- | --- |
-| [01-intent.md](01-intent.md) | Verbatim user intent, amendments, constraints |
-| [02-research.md](02-research.md) | Surface research and evidence-backed findings |
-| [03-questions.md](03-questions.md) | Open and resolved questions |
-| [04-synthesis.md](04-synthesis.md) | Current consolidated understanding |
-| [05-decisions.md](05-decisions.md) | Adopted and superseded decisions |
-| [06-implementation.md](06-implementation.md) | Implementation plan and completion record |
-| [07-verification.md](07-verification.md) | Observed proof, failures, and gaps |
+- [Research](research.md)
+- [Implementation](implementation.md)
+- [Verification](verification.md)
