@@ -22,6 +22,9 @@ Create an appendix only when a large inventory or evidence table would make `res
 ## Rules
 
 - Preserve the user's original task verbatim in `README.md`; record later amendments separately.
+- Use ASD-STE100 principles for authored prose: use short declarative sentences, active voice, one instruction per sentence, and one consistent term per concept.
+- Do not rewrite verbatim user text, quotations, code, commands, logs, identifiers, paths, or external evidence.
+- Prefer clarity over strict ASD-STE100 compliance. Do not claim that a ledger is ASD-STE100 compliant.
 - Separate facts, inferences, proposals, and adopted decisions.
 - Attach evidence to material claims: `path:line`, commands plus observed output, or direct URLs with access dates.
 - Keep `README.md` current and concise; it is the re-entry point after compaction or handoff.
