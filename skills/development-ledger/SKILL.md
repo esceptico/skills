@@ -1,53 +1,25 @@
 ---
 name: development-ledger
-description: Create and maintain a compact, evidence-backed development ledger from initial task through research, implementation planning, and verification. Use when Codex needs to research or scope a codebase or technical idea, preserve context across compaction or sessions, consolidate code/web/subagent findings, derive an implementation checklist, distinguish implemented work from verified behavior, or resume an existing multi-stage investigation.
+description: Create or resume an evidence-backed task ledger when multi-stage work needs durable context across sessions or handoffs.
+metadata:
+  version: "1.0.0"
 ---
 
 # Development Ledger
 
-Keep one compact task directory that preserves intent, evidence, current understanding, planned work, and proof.
-
-## Default layout
-
-```text
-<ledger>/
-├── README.md          # verbatim task, watermarks, synthesis, decisions, questions, next action
-├── research.md        # surface research, consolidated findings, conflicts
-├── implementation.md  # proposed and completed work
-└── verification.md    # observed proof, failures, gaps
-```
-
-Create an appendix only when a large inventory or evidence table would make `research.md` hard to scan.
-
-## Rules
-
-- Preserve the user's original task verbatim in `README.md`; record later amendments separately.
-- Use ASD-STE100 principles for authored prose: use short declarative sentences, active voice, one instruction per sentence, and one consistent term per concept.
-- Do not rewrite verbatim user text, quotations, code, commands, logs, identifiers, paths, or external evidence.
-- Prefer clarity over strict ASD-STE100 compliance. Do not claim that a ledger is ASD-STE100 compliant.
-- Separate facts, inferences, proposals, and adopted decisions.
-- Attach evidence to material claims: `path:line`, commands plus observed output, or direct URLs with access dates.
-- Keep `README.md` current and concise; it is the re-entry point after compaction or handoff.
-- Consolidate repeated/raw research into durable findings instead of accumulating transcripts.
-- Treat `[x]` in `implementation.md` as implemented, not verified.
-- Put observed proof only in `verification.md`.
-- Mark the ledger `complete` only when required verification passed or accepted gaps are explicit.
-- Let state describe the user-requested scope. A research-only task may be complete while its proposed implementation remains unchecked.
-- Do not implement unless the user requested implementation.
+Keep a compact record of the user's intent, current understanding, decisions, work, and verification. Use it to support the requested work; a ledger does not add a separate approval checkpoint.
 
 ## Create or resume
 
-If the user asks for a new ledger, a new task, or to start from scratch, create a new task-specific ledger immediately. Do not search, reuse, or mention unrelated ledgers.
-
-Search for an existing ledger only when the user asks to continue, resume, or update prior work:
+For a new task, create a task-specific ledger. Search existing ledgers only when continuing prior work; use the supplied path when available:
 
 ```bash
 rg -l '<!-- development-ledger:v(1|2) -->' .
 ```
 
-Continue a matching v1 ledger in its existing layout. Do not migrate or reshape it unless the user asks.
+Resume the existing layout, including v1. Read `README.md`, then only the file needed for the active work. Compare the recorded revision with current `HEAD` and refresh affected evidence.
 
-Create a ledger under the repository's established documentation location, otherwise default to `docs/ledgers/<task-slug>/`:
+Use the repository's established documentation location, otherwise `docs/ledgers/<task-slug>/`:
 
 ```bash
 python3 <skill-dir>/scripts/create_ledger.py \
@@ -57,26 +29,27 @@ python3 <skill-dir>/scripts/create_ledger.py \
   --intent-file /path/to/verbatim-request.txt
 ```
 
-## Work
+## Record what matters
 
-1. Record scope and surface observations in `research.md`.
-2. Promote supported claims into consolidated findings; move unresolved uncertainty to `README.md`.
-3. Rewrite the current synthesis in `README.md` when understanding changes.
-4. Record adopted decisions separately from proposals.
-5. Add an implementation checklist only when useful for the requested outcome.
-6. Record commands, observations, failures, and remaining gaps in `verification.md`.
-7. Update README watermarks and next action last.
+- **README.md:** verbatim original task and separate amendments, current synthesis, adopted decisions, open questions, revision watermarks, and next action.
+- **research.md:** consolidated findings with evidence and unresolved conflicts. Distinguish facts, inferences, and proposals; keep raw transcripts out of the ledger.
+- **implementation.md:** planned and completed work within the user's scope. `[x]` means implemented, not verified.
+- **verification.md:** observed checks, results, failures, and remaining gaps. Reference this proof from completion claims.
 
-When fan-out is authorized and useful, give each subagent an independent scope plus evidence requirements. Consolidate their findings; never paste raw worker transcripts.
+Attach evidence to material claims: `path:line`, commands with observed output, or direct URLs with access dates. Add an appendix only when an inventory would obscure the findings.
 
-## Re-enter
+Use practical ASD-STE100 principles: short active sentences, one instruction per sentence, and consistent terms. Preserve user text, quotations, code, commands, logs, and identifiers verbatim. Prefer clarity over formal compliance; do not claim ASD-STE100 certification.
 
-Read `README.md`, then only the file for the active phase. Compare the recorded code revision with current `HEAD` and refresh affected evidence when they differ.
+## Continue and complete
 
-## Validate
+Keep the README usable as the re-entry point when understanding or work state changes. Continue through implementation and verification when already requested; research-only work ends with the research deliverable.
+
+Mark the ledger `complete` when the requested scope is satisfied and required verification passed, or the user accepted the remaining gaps. Proposed implementation may remain unchecked in a completed research-only ledger.
+
+Validate the final ledger or a handoff with:
 
 ```bash
 python3 <skill-dir>/scripts/validate_ledger.py path/to/ledger --repo .
 ```
 
-Fix errors. Review warnings for revision drift, excessive size, placeholders, checked work without proof, or unsupported completion claims.
+Fix errors; assess warnings for stale evidence, placeholders, excessive size, or unsupported completion claims.

@@ -43,18 +43,7 @@ Avoid both endpoint-shaped fragmentation and opaque mega-tools.
 
 ## 3. Make descriptions operational
 
-A tool description should explain:
-
-- what user intent it owns;
-- when to use it;
-- when not to use it;
-- prerequisites;
-- related tools and sequencing;
-- important argument semantics;
-- result shape and continuation behavior;
-- common failures and recovery.
-
-Descriptions are onboarding material for the calling model, not merely API summaries.
+State the intent the tool owns and the information needed to choose it correctly. Include exclusions, prerequisites, sequencing, or recovery guidance only when they prevent a likely mistake. Keep argument details in parameter schemas and continuation details in results when possible; avoid repeating them in every description.
 
 ## 4. Treat schemas as executable communication
 
@@ -222,4 +211,4 @@ When evidence is incomplete, report a hypothesis and the experiment or instrumen
 
 Agent ergonomics and reliability can expose security-relevant symptoms, but passing this audit does not establish secure authorization, tenant isolation, privacy, or abuse resistance.
 
-Sensitive or production harnesses should receive a separate specialist review. Keep this disclaimer concise so the ergonomics audit does not expand into an unfocused security checklist.
+If observed hazards need specialist investigation, identify that gap. Do not turn every production harness review into a separate security-audit requirement.

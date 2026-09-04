@@ -1,0 +1,47 @@
+{
+  "skill_name": "ml-research",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I have one week and access to 4x H100 80GB GPUs. Research the strongest practical approaches for adapting an open 7B–9B language model to follow instructions over 32k-token documents. Recommend one initial experiment, including the base model, data, training method, evaluation protocol, and realistic caveats. Use current primary sources and verify that the recommended model, dataset, and implementation artifacts actually exist.",
+      "expected_output": "A concise recommendation grounded in primary papers and verified current artifacts, with configurations and results kept tied to their evaluation conditions. It should identify non-comparable claims, respect the compute constraint, and propose a minimal first experiment.",
+      "files": [],
+      "expectations": [
+        "The response gives a direct recommendation compatible with 4x H100 80GB and one week.",
+        "Load-bearing performance claims are attributed to primary papers rather than summaries or search snippets.",
+        "The recommended model, dataset, and implementation are verified with exact repository identifiers or file references.",
+        "Reported results remain bound to their model, data, context length, and evaluation protocol.",
+        "The response identifies at least one comparability or transfer limitation.",
+        "The proposed first experiment specifies a baseline, metric, and stopping or success criterion."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Evaluate the evidence that sparse autoencoder features correspond to causal mechanisms rather than merely correlated descriptions in open language models. Focus on work that releases usable artifacts for Gemma-family models. Separate what is established from what remains uncertain, verify the relevant Hugging Face artifacts, and propose the smallest intervention experiment that would discriminate between the strongest competing interpretations.",
+      "expected_output": "A mechanistic-interpretability review that distinguishes descriptive, predictive, and causal evidence; inspects interventions and controls; verifies Gemma-related SAE artifacts; and proposes a focused causal experiment.",
+      "files": [],
+      "expectations": [
+        "The response explicitly distinguishes correlational evidence from causal intervention evidence.",
+        "Each central claim identifies the target model or component, interpretability method, intervention, and measured effect when available.",
+        "The response evaluates controls, generality, and limitations such as feature splitting, absorption, reconstruction loss, or cherry-picking.",
+        "Relevant Gemma-family SAE or interpretability artifacts are verified with exact repository identifiers.",
+        "Contradictory or qualifying evidence is surfaced rather than omitted.",
+        "The proposed experiment includes an intervention, matched control, behavioral metric, and collateral-damage measurement."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "We need a reproducible open-source baseline for detecting hallucinations in retrieval-augmented generation answers. Research a defensible method that can be implemented in Python this week. Verify the datasets, model checkpoints, evaluation code, licenses, and current APIs. Return an implementation plan with exact artifact IDs and the smallest smoke test that exercises the real model/data path; do not write the full implementation yet.",
+      "expected_output": "An artifact-grounded implementation plan based on primary evidence and current official documentation, with exact IDs, compatibility caveats, and a realistic end-to-end smoke test.",
+      "files": [],
+      "expectations": [
+        "The recommendation is narrow enough to implement in Python within one week.",
+        "Primary research evidence is separated from implementation documentation and the assistant's judgement.",
+        "Dataset splits, schema, license, and sample availability are checked rather than assumed.",
+        "Model checkpoints, evaluation repository or files, and current API usage are verified.",
+        "The plan names exact artifact IDs and implementation references.",
+        "The smoke test exercises loading real data, running the real model or method, and computing one meaningful metric."
+      ]
+    }
+  ]
+}
