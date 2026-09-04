@@ -53,18 +53,20 @@ Check for:
 
 ### Artifacts and limitations
 
-Verify exact model, SAE/transcoder, activation dataset, dashboard, code, and evaluation-script identifiers. Assess feature splitting and absorption, polysemanticity, reconstruction loss, downstream loss recovery, cherry-picked examples, prompt sensitivity, and external validity.
+Use [artifact verification](artifact-verification.md) for exact model, SAE/transcoder, activation dataset, dashboard, code, and evaluation-script identifiers and revisions. Assess feature splitting and absorption, polysemanticity, reconstruction loss, downstream loss recovery, cherry-picked examples, prompt sensitivity, and external validity.
 
-## Causal-strength labels
+## Interpret causal evidence along separate dimensions
 
-1. **Descriptive:** examples or activation correlations
-2. **Predictive:** representation predicts labels or behavior on held-out data
-3. **Localized:** attribution associates a component with the behavior
-4. **Interventional:** manipulating the component changes behavior
-5. **Specific causal evidence:** matched controls support the proposed mechanism over simpler explanations
-6. **Generalized mechanism:** the effect replicates across distributions, tasks, or models
+Descriptive examples, predictive probes, and attribution can motivate a mechanism without establishing it. Assess each relevant dimension separately rather than assigning a single causal-strength rank:
 
-Levels 1–3 do not establish a causal mechanism.
+- **Necessity:** does removing or replacing the component impair the behavior under the tested conditions? Redundant mechanisms can mask necessity; broad damage can mimic it.
+- **Sufficiency:** does introducing or restoring the component produce or recover the behavior in the tested background? This does not establish that the intact model normally uses that route.
+- **Specificity:** do matched controls distinguish the proposed mechanism from generic disruption or another explanation?
+- **Generalization:** does the claim survive held-out prompts, distributions, or models? Replication of an effect alone does not establish its mechanism.
+
+For patching, record source/destination conditions, direction, corruption method, magnitude, and metric. Explain what the intervention tests in that setup; patching directions are not interchangeable. Check whether an intervention creates off-distribution activations or broad performance degradation. A behavioral change alone does not distinguish disruption from the claimed mechanism.
+
+Report supported and unresolved dimensions independently. Distinguish intervention effects in a surrogate or reconstructed model from evidence about the original model, and inspect fidelity when transferring that conclusion.
 
 ## Recommendation gate
 

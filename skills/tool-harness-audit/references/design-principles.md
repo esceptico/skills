@@ -144,6 +144,14 @@ Possible controls include:
 
 Do not impose a universal read-before-write rule. Some operations are safely idempotent or already contain sufficient context. Require a pre-read when it materially reduces stale-state, identity, scope, or consequence risk.
 
+### Interrupted and concurrent operations
+
+For mutable workflows, check timeout after commit, cancellation during execution, partial batch completion, and concurrent updates. A missing response or cancellation request does not establish rollback.
+
+The agent needs to distinguish confirmed success, confirmed failure without effects, partial completion, and unknown outcome. Look for a durable operation handle, status lookup, or authoritative state check that can resolve uncertainty before retrying. Reuse the same idempotency key when retrying the same logical operation where supported; do not assume a new request is safe.
+
+For batches, expose per-item outcomes and a way to resume only unfinished work. Check that version/conflict handling detects concurrent changes rather than silently overwriting them. If the outcome cannot be established and a retry could duplicate an effect, surface the uncertainty instead of retrying blindly. Apply these checks to the operations that need them, not every read.
+
 ## 11. Make errors actionable
 
 An actionable error states:

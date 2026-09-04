@@ -2,7 +2,7 @@
 name: tool-harness-audit
 description: Audit an existing MCP or agent tool harness for tool-selection, contract, and workflow reliability. Use for harness reviews, not ordinary backend edits.
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Tool Harness Audit
@@ -20,7 +20,7 @@ Trace material findings through the responsible layers: declared schema, generat
 ## Load details as needed
 
 - For contract checks or proposed fixes, consult the relevant sections of [design principles](references/design-principles.md): boundaries, descriptions, schemas, validation, optional values, outputs, pagination, references, mutations, and errors.
-- For model-selection, chaining, or recovery experiments, read [evaluations](references/evaluations.md). Record untested behavior when execution is unavailable or outside scope.
+- For tool discovery, selection, chaining, or recovery experiments, read [evaluations](references/evaluations.md). Record untested behavior when execution is unavailable or outside scope.
 - For outcome, confidence, and severity labels, use [assessment](references/assessment.md).
 - For a broad audit report, adapt [the report template](assets/report-template.md). A focused review may use a short findings list.
 

@@ -2,7 +2,7 @@
 name: ml-research
 description: Review ML research or select methods, models, and datasets using primary evidence; assess causal claims in mechanistic interpretability.
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # ML Research
@@ -21,7 +21,7 @@ Read the primary source sections supporting material claims; abstracts and snipp
 
 For contemporary recommendations, check recent eligible releases rather than anchoring on familiar work. Use the current-artifact scan in the standard ML reference when selecting artifacts, and report the evidence cutoff.
 
-Verify the artifacts needed for the recommendation: exact repository/checkpoint IDs, licenses, relevant data splits and schema, and implementation/config files. Hugging Face Hub tools are useful for hosted artifacts; official repositories, APIs, or documentation are alternatives. Mark inaccessible evidence as unverified rather than making a particular connector a prerequisite.
+Verify the artifacts needed for the recommendation: exact repository/checkpoint IDs, licenses, relevant data splits and schema, and implementation/config files. Hugging Face Hub tools are useful for hosted artifacts; official repositories, APIs, or documentation are alternatives. Report [verification depth](references/artifact-verification.md) per artifact; an existing repository is not a reproduced result. A particular connector is not a prerequisite.
 
 ## Deliver and continue
 

@@ -65,11 +65,19 @@ Use the fields relevant to the claim or selection. Missing training details need
 - Exact Hugging Face model and dataset IDs
 - Code repository and implementation/config file paths
 - Checkpoints, evaluation scripts, and current documentation
-- Verification status: `verified`, `partial`, `unverified`, or `unavailable`
+- Verification depth and revision: use [artifact verification](artifact-verification.md).
 
 ## Comparability gate
 
 Do not rank headline numbers directly when metrics, splits, prompting, harnesses, data, model scale, compute, or run-selection procedures differ. State the confound and restrict the conclusion.
+
+## Selection bias and uncertainty
+
+For performance claims, inspect variation across relevant seeds and data splits, effect sizes, and reported uncertainty. Missing uncertainty limits the conclusion; do not invent error bars or assume a small improvement is robust.
+
+Compare tuning and selection budgets as well as final training cost: trials, prompts, checkpoints, and metrics searched can change the best reported score. Check whether the final evaluation data were held out from model, prompt, and hyperparameter selection. Repeatedly choosing against the test set makes it part of selection.
+
+When assessing a claimed win, look for matched evaluation conditions and an untouched evaluation or independent replication. Account for multiple comparisons when many alternatives were screened. Where those checks are unavailable, describe the result as a reported gain with unresolved selection bias rather than an established advantage.
 
 ## Recommendation gate
 
