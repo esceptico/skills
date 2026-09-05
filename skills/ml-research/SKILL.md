@@ -2,7 +2,7 @@
 name: ml-research
 description: Review ML research or select methods, models, and datasets using primary evidence; assess causal claims in mechanistic interpretability.
 metadata:
-  version: "1.1.1"
+  version: "1.2.0"
 ---
 
 # ML Research
@@ -14,6 +14,7 @@ Answer the user's research decision with primary evidence. Keep reported results
 - For model/data selection, training, inference, or benchmark comparisons, use [standard ML](references/standard-ml.md).
 - For model-internals or causal-mechanism claims, use [mechanistic interpretability](references/mech-interp.md).
 - Load both only when the question needs both evidence patterns. A narrow paper question needs only the relevant checks.
+- When designing or running experiments, consult [experiment design](references/experiment-design.md).
 
 ## Evidence standard
 
