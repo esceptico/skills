@@ -107,21 +107,11 @@ Prefer compact, stable, agent-readable results over raw backend dumps. Structure
 
 ## 8. Bound large reads
 
-Large reads should provide:
-
-- safe defaults;
-- explicit limits;
-- stable cursors or continuation tokens;
-- truncation indicators;
-- total or estimated counts where available;
-- narrowing guidance;
-- deterministic sort order.
-
-Do not silently truncate without telling the caller. Do not return an unbounded result merely because the backend permits it.
+Keep large results bounded and make omitted data visible. Provide a way to continue or narrow the request when needed. Choose limits, pagination, counts, and ordering according to the data and next action; not every read needs every mechanism.
 
 ## 9. Use semantic and stable references
 
-Prefer names, paths, handles, emails, slugs, or stable tool-level references over raw storage identifiers.
+Use references that agents can obtain and resolve unambiguously. Names and paths can aid discovery; stable IDs may be necessary when names collide or change. Avoid making agents reconstruct opaque identifiers.
 
 Response-local index references are acceptable only when their scope is obvious and protected by a response token or equivalent mechanism. Do not imply an unstable index is globally reusable.
 
@@ -154,17 +144,7 @@ For batches, expose per-item outcomes and a way to resume only unfinished work. 
 
 ## 11. Make errors actionable
 
-An actionable error states:
-
-- what failed;
-- which field or prerequisite caused it;
-- whether retrying unchanged can work;
-- the next tool or argument needed;
-- whether the query must be narrowed;
-- whether authorization or reauthentication is required;
-- whether partial state changed.
-
-Avoid returning only transport codes or generic exceptions.
+Explain what failed and the information needed to recover: an invalid argument, missing prerequisite, retry condition, or partial effect. Include only details relevant to that failure. Transport codes or generic exceptions alone rarely support a useful next action.
 
 ## 12. Separate deterministic and stochastic evidence
 

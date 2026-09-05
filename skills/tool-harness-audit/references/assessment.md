@@ -3,7 +3,7 @@
 Use these labels when reporting workflow outcomes and findings.
 
 
-Use three separate dimensions. Do not substitute one for another.
+Keep outcome, confidence, and severity distinct. These labels are defaults; use the project's vocabulary when it preserves those distinctions.
 
 ### Outcome
 
@@ -27,5 +27,3 @@ Apply severity to findings, not workflows:
 - **High** — likely wrong-tool selection, unsafe writes, data loss, authorization-sensitive mistakes, or unrecoverable task failure.
 - **Medium** — meaningful reliability, context, latency, or recovery cost.
 - **Low** — localized consistency, naming, documentation, or polish issue.
-
-Use **Critical** only if the audited organization already uses it and the evidence supports immediate, broad impact.

@@ -2,7 +2,7 @@
 name: development-ledger
 description: Create or resume an evidence-backed task ledger when multi-stage work needs durable context across sessions or handoffs.
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Development Ledger
@@ -31,6 +31,8 @@ python3 <skill-dir>/scripts/create_ledger.py \
 
 ## Record what matters
 
+Adapt the detail to the task. The template is a starting point; omit irrelevant sections or phase files rather than filling them for completeness. Keep the original intent and current state easy to find.
+
 - **README.md:** verbatim original task and separate amendments, current synthesis, adopted decisions, open questions, revision watermarks, and next action.
 - **research.md:** consolidated findings with evidence and unresolved conflicts. Distinguish facts, inferences, and proposals; keep raw transcripts out of the ledger.
 - **implementation.md:** planned and completed work within the user's scope. `[x]` means implemented, not verified.
@@ -42,7 +44,7 @@ Use practical ASD-STE100 principles: short active sentences, one instruction per
 
 ## Continue and complete
 
-Keep the README usable as the re-entry point when understanding or work state changes. Continue through implementation and verification when already requested; research-only work ends with the research deliverable.
+Preserve what another agent needs to continue. Keep the README current and consolidate outdated notes as understanding changes; retain the reasons for decisions that still matter. Continue through implementation and verification when already requested; research-only work ends with the research deliverable.
 
 Mark the ledger `complete` when the requested scope is satisfied and required verification passed, or the user accepted the remaining gaps. Proposed implementation may remain unchecked in a completed research-only ledger.
 
@@ -52,4 +54,4 @@ Validate the final ledger or a handoff with:
 python3 <skill-dir>/scripts/validate_ledger.py path/to/ledger --repo .
 ```
 
-Fix errors; assess warnings for stale evidence, placeholders, excessive size, or unsupported completion claims.
+Fix errors; assess warnings in context. The validator checks structure and flags possible gaps; it cannot establish that the work is complete.

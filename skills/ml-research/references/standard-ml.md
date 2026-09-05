@@ -10,13 +10,9 @@ A result without its conditions is not actionable.
 
 ## Current-artifact scan
 
-Before selecting a contemporary model, dataset, or implementation:
+For contemporary selection, check recent official releases that meet the user's constraints, including plausible alternatives missing from older citations. Release histories, model cards, and repository date filters can help; modification alone does not establish a new release.
 
-1. Check recent releases in the relevant official repositories. For Hugging Face selection, use both `createdAt` and `lastModified` ordering when available; otherwise inspect release history or model cards for those dates. Modification alone does not establish a new model release.
-2. Filter by the user's size, task, modality, license, and deployment constraints.
-3. Compare plausible eligible alternatives, including newer releases missing from older paper citations. Choose breadth based on the decision; do not pad the comparison to a fixed count.
-4. Record why the selected artifact wins and why each serious alternative was rejected.
-5. Treat vendor benchmark claims as evidence to reproduce, not independent validation.
+Choose comparison breadth according to the decision and explain the consequential tradeoffs. Treat vendor benchmark claims as reported results, not independent validation.
 
 ## Evidence to inspect
 
@@ -79,14 +75,6 @@ Compare tuning and selection budgets as well as final training cost: trials, pro
 
 When assessing a claimed win, look for matched evaluation conditions and an untouched evaluation or independent replication. Account for multiple comparisons when many alternatives were screened. Where those checks are unavailable, describe the result as a reported gain with unresolved selection bias rather than an established advantage.
 
-## Recommendation gate
+## Recommendations
 
-Before recommending a method, answer:
-
-1. Is the advantage supported by an appropriate comparison?
-2. Are required data, code, licenses, and checkpoints available?
-3. Does the implementation use current APIs?
-4. Does it fit the user's compute, time, and deployment constraints?
-5. What is the smallest real-path smoke test?
-
-A good first experiment reproduces one defensible baseline, changes one justified factor, preserves the evaluation protocol, and records both quality and resource metrics.
+Base the recommendation on comparable evidence, usable artifacts, and the user's constraints. When an experiment is useful, choose one that resolves the main uncertainty with an appropriate baseline and evaluation protocol; record quality and resource costs relevant to the decision.

@@ -68,15 +68,6 @@ For patching, record source/destination conditions, direction, corruption method
 
 Report supported and unresolved dimensions independently. Distinguish intervention effects in a surrogate or reconstructed model from evidence about the original model, and inspect fidelity when transferring that conclusion.
 
-## Recommendation gate
+## Recommendations
 
-Before accepting a mechanistic claim, answer:
-
-1. What exact behavior is explained?
-2. What intervention changes it?
-3. Which controls rule out simpler explanations?
-4. How much of the behavior is explained?
-5. Does the effect generalize beyond selected examples?
-6. Are the model, activations/features, and evaluation code reproducible?
-
-Prefer a small held-out causal test with a matched random or matched-norm control. Measure both the target behavioral effect and collateral degradation. When assessing SAE fidelity or intervention results, inspect reconstruction, loss recovery, sparsity, dead features, and intervention specificity as relevant. Distinguish reported metrics from unavailable ones.
+Match the conclusion to the supported causal dimensions and the amount of behavior explained. When a causal test is useful, choose held-out examples and controls that distinguish the competing explanations; matched random or matched-norm interventions are options, not universal requirements. Measure collateral degradation where it could explain the effect. For SAE fidelity claims, inspect the relevant reconstruction, loss recovery, sparsity, and feature-health evidence.

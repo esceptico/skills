@@ -41,6 +41,8 @@ Begin the first scoped research pass.
 
 ## Details
 
+<!-- Keep only the sections and phase files useful for this task; update these links if files are omitted. -->
+
 - [Research](research.md)
 - [Implementation](implementation.md)
 - [Verification](verification.md)

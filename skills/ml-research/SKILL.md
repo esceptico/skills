@@ -2,7 +2,7 @@
 name: ml-research
 description: Review ML research or select methods, models, and datasets using primary evidence; assess causal claims in mechanistic interpretability.
 metadata:
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # ML Research

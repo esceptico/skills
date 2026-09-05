@@ -107,17 +107,18 @@ def main() -> int:
     for filename, headings in required_headings.items():
         path = ledger / filename
         if not path.is_file():
-            errors.append(f"missing required file: {filename}")
+            if filename in {"README.md", intent_file}:
+                errors.append(f"missing required file: {filename}")
             continue
         text = path.read_text(encoding="utf-8")
         contents[filename] = text
         for heading in headings:
             if heading not in text:
-                errors.append(f"{filename}: missing heading beginning with '{heading}'")
+                warnings.append(f"{filename}: template heading absent: '{heading}'; check whether it is relevant")
         lines = len(text.splitlines())
         limit = 160 if filename == "README.md" else 300
         if lines > 500:
-            errors.append(f"{filename}: {lines} lines; move bulky evidence to an appendix")
+            warnings.append(f"{filename}: {lines} lines; consider an appendix if bulky evidence obscures the findings")
         elif lines > limit:
             warnings.append(f"{filename}: {lines} lines; consolidation recommended above {limit}")
         if re.search(r"\{\{[A-Z0-9_]+\}\}", text):
@@ -142,10 +143,10 @@ def main() -> int:
     nonpass_rows = [row for row in evidence_rows if re.search(r"\|\s*(fail|blocked|not-run|pending)\s*\|", row, re.IGNORECASE)]
 
     if checked_items and not evidence_rows:
-        warnings.append("implementation has checked items but verification has no evidence rows")
+        warnings.append("implementation has checked items but no tabular verification evidence was detected; review the recorded proof")
     if state == "complete":
         if not pass_rows:
-            errors.append("ledger is complete but no passing verification evidence is recorded")
+            warnings.append("ledger is complete but no passing evidence row was detected; review completion evidence or user-accepted gaps")
         if nonpass_rows:
             warnings.append("ledger is complete with non-passing evidence; document accepted gaps")
 

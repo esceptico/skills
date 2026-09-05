@@ -2,7 +2,7 @@
 name: tool-harness-audit
 description: Audit an existing MCP or agent tool harness for tool-selection, contract, and workflow reliability. Use for harness reviews, not ordinary backend edits.
 metadata:
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # Tool Harness Audit
