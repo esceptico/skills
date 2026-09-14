@@ -1,0 +1,4 @@
+interface:
+  display_name: "Human Interface Design"
+  short_description: "Design and review humane, platform-native interfaces"
+  default_prompt: "Use $human-interface-design to review this interface and propose the smallest high-impact improvements."
