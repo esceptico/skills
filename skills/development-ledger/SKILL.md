@@ -46,6 +46,8 @@ Use practical ASD-STE100 principles: short active sentences, one instruction per
 
 Preserve what another agent needs to continue. Keep the README current and consolidate outdated notes as understanding changes; retain the reasons for decisions that still matter. Continue through implementation and verification when already requested; research-only work ends with the research deliverable.
 
+When a decision blocks work, preserve its origin (user requirement or agent-derived choice), rationale, and the actions it actually blocks. On re-entry or after contradictory evidence, reassess agent-derived prerequisites; retain historical outcomes while updating the current plan. A failed implementation check does not automatically block independent work or invalidate a research hypothesis. Record changes in interpretation with their evidence, rather than treating a user objection or an agent concession as proof.
+
 Mark the ledger `complete` when the requested scope is satisfied and required verification passed, or the user accepted the remaining gaps. Proposed implementation may remain unchecked in a completed research-only ledger.
 
 Validate the final ledger or a handoff with:
