@@ -1,0 +1,4 @@
+interface:
+  display_name: "Long Task Orchestrator"
+  short_description: "Delegate long tasks and supervise them with periodic check-ins"
+  default_prompt: "Orchestrate this long-running task across Codex tasks, verify progress, and course-correct as needed."
