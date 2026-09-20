@@ -44,12 +44,13 @@ Research on its own does not authorize paid compute, training, or destructive ch
 
 ## Control loop and workers
 
-Run as one control-loop agent that owns the question, the hypotheses, the log, and every keep-or-revert decision. Workers do bounded work: one experiment, one paper read, one setup task. Decisions never move to a worker, because actions carry implicit decisions and dispersed decisions contradict each other.
+Run as one control-loop agent that owns the question, the log, and every keep-or-revert verdict. Reading a result and deciding what it means stays in the controller, because that judgment needs the full history and is where research goes wrong. Workers execute.
 
-- Dispatch a worker with a complete standalone brief: question, starting state, allowed scope, exact commands or artifacts, the metric, and what evidence proves completion. Independent hypotheses may run as parallel workers; a synthesis pass then compares them under matched conditions.
-- Every worker ends with a [handoff record](references/research-log.md), not a chat reply: what ran, exact commands, result with baseline and conditions, failures, known-good versus known-broken, next useful step. Large outputs go to files the controller reads selectively.
-- Worker results are worker-reported evidence until the controller has read the artifact. A verification worker with fresh context is cheaper than trusting the implementation worker's judgment.
-- Do single lookups and edits inline. Do not dispatch work whose result the next step does not depend on.
+- Brief a worker with the intent, the starting state, the metric, and what evidence proves completion. Workers have latitude in how they execute: fix a crash, pick a sensible default, add a sanity check, read further when a source is thin.
+- The one hard rule: every choice a worker made (seed, data slice, config change, skipped check, fix applied) goes in its [handoff record](references/research-log.md), so the controller sees it before judging the result. Decisions travel with context; an unreported choice is a future contradiction.
+- Workers return the raw artifacts plus the record, not only a summary. Large outputs go to files the controller reads selectively.
+- Worker results are worker-reported evidence until the controller has read the artifact. A fresh-context verification worker is cheaper than trusting the implementation worker's judgment.
+- Do single lookups and edits inline. Launch long runs non-blocking and keep working ([long-running work](references/long-running-work.md)).
 
 ## Done
 
