@@ -1,18 +1,18 @@
 # Evaluation Notes
 
-Evaluated on August 28, 2026.
+## History
+
+- **1.x (evaluated August 28, 2026).** Three one-shot literature scenarios. The skill improved mechanistic-interpretability reasoning and artifact verification, and a dated current-artifact scan fixed anchoring on old checkpoints. Splitting standard ML and mech interp into references kept the benefits while shrinking `SKILL.md`.
+- **2.0 (September 20, 2026).** Rewritten after agents using 1.x behaved narrowly: they answered the literal question, did one paper check, and stopped. Cause: the skill was a review skill (evidence units, comparability gates) with no research loop, no hygiene ladder, no log, no stopping or scale-up rules, and evals that only asked literature questions. Sources for the rewrite: Neel Nanda's research-process sequence, Karpathy's training recipe and autoresearch loop, Prime Intellect's agent conventions, Cognition's Kevin-32B loop and playbook shape, the AutoResearch failure taxonomy (arXiv 2608.14905). Evals 1 and 2 are now campaigns with a metric and a sandbox; 3 and 4 keep the literature scenarios.
 
 ## Scenarios
 
-1. Select and adapt a current open 7B–9B model for 32k-document instruction following under a one-week, 4× H100 constraint.
-2. Assess whether Gemma-family sparse-autoencoder evidence is correlational or causal and propose a discriminating intervention.
-3. Select a reproducible open-source RAG hallucination-detection baseline and verify its model, data, code, licenses, APIs, and smoke test.
+1. Fixed-budget val_bpb campaign on a nanoGPT-style repo (autoresearch shape).
+2. A narrow "does X help" question that should open into a loop with hygiene checks.
+3. Model and method selection under a compute constraint, plan only.
+4. Causal-versus-correlational assessment of Gemma SAE evidence.
 
-## Findings
+## Open
 
-- The original one-file skill improved mechanistic-interpretability reasoning and artifact verification, but its standard-ML run anchored on an older checkpoint.
-- Splitting standard ML and mechanistic interpretability into references preserved those benefits while reducing `SKILL.md` from 213 lines to about 70.
-- Generic freshness language was insufficient. The final skill requires searching official Hugging Face repositories by both creation and modification date, comparing at least three eligible finalists, and recording acceptance/rejection reasons.
-- The regression rerun surfaced `Qwen/Qwen3.5-9B`, `ibm-granite/granite-4.2-8b`, `swiss-ai/Apertus-v1.5-8B`, and `meta-llama/Llama-3.1-8B-Instruct`, then selected Qwen3.5 with explicit evidence and caveats.
-- Each revised run loaded only the directly relevant reference.
-- No evaluation demonstrated repeated deterministic work that justified a bundled script. Reconsider a narrow evidence validator only if future runs repeatedly lose provenance or recreate the same validation logic.
+- 2.0 has not yet been run against these scenarios. Run 1 and 2 first; they are the ones 1.x could not do.
+- Reconsider a bundled log-table script only if runs repeatedly hand-build the same table.
