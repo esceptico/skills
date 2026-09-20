@@ -10,7 +10,7 @@ For a campaign, or work that crosses sessions or agents, keep one log file where
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | r07 | Understand | LR warmup is why r05 diverged | loss stable through step 200 | `a1b2c3d`, lr 3e-4, warmup 100 | stable, val 2.41 vs best 2.44 | keep, new best | try warmup 50 |
 
-Verdicts are `keep`, `revert`, `inconclusive`, or `failed` with a reason. Reverted and failed runs stay in the table. Record per-seed numbers, not only the mean. A result without its baseline and conditions is not a result.
+Verdicts are `keep`, `revert`, `inconclusive`, or `failed` with a reason. Reverted and failed runs stay in the table. Record per-run numbers, not only the mean. A result without its baseline and conditions is not a result.
 
 Keep a short highlights section above the table: the current best, the two or three most surprising findings, and open anomalies.
 

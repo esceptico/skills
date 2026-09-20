@@ -41,11 +41,11 @@ Prefer goal-driven research (pick the problem, then whatever method serves it) o
 
 ## Statistical bar
 
-A p-value between 0.01 and 0.05 means collect more data, not claim; data is usually cheap, so aim for 0.001. An implausibly tiny p-value usually means broken independence (correlated samples, shared prompts) rather than a discovery. Permutation-test the pipeline on shuffled labels to see what noise alone produces. Report effect sizes and variation across seeds and splits; never invent error bars from one run.
+A p-value between 0.01 and 0.05 means collect more data, not claim; data is usually cheap, so aim for 0.001. An implausibly tiny p-value usually means broken independence (correlated samples, shared prompts) rather than a discovery. Permutation-test the pipeline on shuffled labels to see what noise alone produces. Report effect sizes and variation across repeats and splits; never invent error bars from one run.
 
 ## Iterative campaigns
 
-When there is a fixed metric and a fixed per-experiment budget, run the autoresearch shape: propose one change with its reasoning, apply it, run the fixed budget, compare to the current best, keep if better and revert if not, log, repeat. The loop is only as good as its evaluator: before the campaign, confirm the evaluator is automatic, frozen, seeded, and separates known-good from known-bad, and measure the noise floor (same config, different seeds). Without that the loop cannot run; say so and propose a manual protocol instead. Timid edits waste runs; make each change large enough to move the metric if the idea is right. Noise decides most of these comparisons, so a change inside the noise floor is inconclusive, whatever its sign.
+When there is a fixed metric and a fixed per-experiment budget, run the autoresearch shape: propose one change with its reasoning, apply it, run the fixed budget, compare to the current best, keep if better and revert if not, log, repeat. The loop is only as good as its evaluator: before the campaign, confirm the evaluator is automatic, frozen, seeded, and separates known-good from known-bad, and know the noise floor (a repeated baseline, or a bootstrap over the evaluation set). Without that the loop cannot run; say so and propose a manual protocol instead. Timid edits waste runs; make each change large enough to move the metric if the idea is right. Noise decides most of these comparisons, so a change inside the noise floor is inconclusive, whatever its sign.
 
 ## When to write up
 
