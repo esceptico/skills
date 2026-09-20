@@ -19,9 +19,9 @@ A pass is one hypothesis tested by the cheapest thing that could change your min
 1. **Know the phase.** Explore (gain information), Understand (weigh named hypotheses against each other), or Distill (compress to 1–3 defensible claims). Say it only when it changes the plan. Most premature narrow answers come from acting as if in Understand while still in Explore, where the right move is many cheap probes and a long look at the data.
 2. **State the hypothesis and what would falsify it.** Also the boring alternative explanation you must rule out.
 3. **Do the cheapest decisive thing.** Smallest model, smallest data, shortest budget, one change at a time. For a read, the primary section rather than the abstract. Before a run of more than roughly half an hour, ask whether a smaller one answers the same question.
-4. **Observe against a baseline.** A number means nothing without its baseline, seed variation, and evaluation conditions; a claim means nothing without the strongest competing source. Correctness before performance: a run that fails its checks scores nothing.
+4. **Observe against a baseline.** A number means nothing without its baseline, its noise floor, and its evaluation conditions; a claim means nothing without the strongest competing source. Correctness before performance: a run that fails its checks scores nothing.
 5. **Verdict: keep, revert, inconclusive, or failed.** Keep an improvement over the current best outside the noise floor under matched conditions; it becomes the new baseline. Inside the noise floor is inconclusive, not a small win. A neutral change that unlocks a branch you can name may be kept; log the reason.
-6. **Log it.** Hypothesis, prediction, config or commit, result, verdict, next ([format](references/research-log.md)). Predictions go in before results. Reverted and failed attempts stay.
+6. **Log it.** Hypothesis, prediction, config or commit, result, verdict, next ([format](references/research-log.md)). Predictions go in before results. Reverted and failed attempts stay. A campaign that lives in a repository keeps its journal, trial folders, and generated tables there ([shape](references/research-log.md#campaign-in-a-repository)).
 7. **Decide.** Zoom in (converging evidence, or a genuine surprise), zoom out (nothing learned for a while, or the question was ill-posed), scale up (the small result survived its sanity checks), or write up (you could defend each claim to a skeptic).
 
 Phases, timers, skepticism drills, and campaigns in detail: [research loop](references/research-loop.md).
@@ -58,8 +58,8 @@ Run as one control-loop agent that owns the question, the log, and every verdict
 ## Never
 
 - Edit, re-tune, or regenerate the evaluation path, metric definition, or test split during a campaign. A run whose diff touches them is void, not a win.
-- Select the reported result against the test set, or report the best seed as the result.
-- Invent error bars, seeds, or conditions you did not run, or a score for a run that failed.
+- Select the reported result against the test set, or report the best of several runs as the result.
+- Invent error bars or conditions you did not run, or a score for a run that failed.
 - Drop failed, reverted, or interrupted runs from the log.
 - Spend paid compute, train, or mutate the user's environment without authorization.
 
@@ -73,4 +73,4 @@ Lead with the answer, then the evidence, then the caveats, and size it to the ta
 
 For a single question: the answer in a sentence; confidence and its basis (verified by, or inferred from); the evidence with its conditions; what you could not verify; the one caveat most likely to make this wrong; the cheapest next step, if uncertainty matters.
 
-For a campaign: the answer; confidence and the one thing that would change it; the current best with its baseline, delta, conditions, and per-seed numbers; what changed, in order; tried and reverted, one line each so nobody repeats them; untested; next experiments with expected cost; links to commits, logs, and configs.
+For a campaign: the answer; confidence and the one thing that would change it; the current best with its baseline, delta, conditions, and per-run numbers; what changed, in order; tried and reverted, one line each so nobody repeats them; untested; next experiments with expected cost; links to commits, logs, and configs.
