@@ -1,6 +1,6 @@
 # Standard ML Evidence Pattern
 
-Use this reference for training, fine-tuning, inference, architecture, dataset, benchmark, and ML systems questions.
+Use this reference for evaluating reported results and selecting among models, datasets, methods, and benchmarks. For runs you launch yourself, use [experiment hygiene](experiment-hygiene.md).
 
 ## Core evidence unit
 

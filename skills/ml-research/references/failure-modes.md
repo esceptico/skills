@@ -1,6 +1,6 @@
 # Failure modes and self-review
 
-Documented ways agents fail at research ([How Do Agents Fail on AutoResearch](https://arxiv.org/abs/2608.14905), overclaiming studies, METR reports, Sakana AI Scientist critiques, Nanda's list of junior-researcher mistakes). The self-review below must change the report; a checklist that passes everything on the first try was not run.
+Documented ways agents fail at research ([How Do Agents Fail on AutoResearch](https://arxiv.org/abs/2608.14905), overclaiming studies, METR reports, Sakana AI Scientist critiques, Nanda's list of junior-researcher mistakes). The self-review below is short on purpose; it must change the report, and if none of its four questions changed anything, look again.
 
 ## Failure modes
 
@@ -13,6 +13,7 @@ Documented ways agents fail at research ([How Do Agents Fail on AutoResearch](ht
 - **Excitement bias.** A surprising result treated as confirmation instead of a reason to re-run.
 - **Timid or shotgun edits.** Changes too small to move the metric, or several changes in one run.
 - **Rabbit-holing.** Hours on one anomaly with no zoom-out.
+- **Unnecessary complexity.** An elaborate method where a simple one applied carefully would do.
 - **Skipping the literature or the data.** Reinventing prior work; never looking at raw examples.
 - **Erasing negatives.** Reverted, failed, or interrupted runs missing from the log.
 - **Declaring done on budget exhaustion or on intent.** "I implemented it" is not "it works".
@@ -20,13 +21,9 @@ Documented ways agents fail at research ([How Do Agents Fail on AutoResearch](ht
 
 ## Self-review before reporting
 
-Answer each in writing, then edit the report accordingly.
+Answer these in writing for anything larger than a quick answer, then edit the report.
 
-1. Which phase was I in, and does the report claim more certainty than that phase supports?
-2. For every number: baseline, seeds or repeats, evaluation conditions, and the artifact it came from. Remove or caveat any that lacks one.
-3. What is the boring alternative explanation, and which check ruled it out?
-4. Which claims come from my own runs, which from a subagent, which from a paper section I read, which from an abstract or snippet? Label them.
-5. What did I not read, not run, or not check? Say so.
-6. Are the examples shown random samples?
-7. Which of the failure modes above did this session commit, even partially? Fix or disclose.
-8. If the user asked a narrow question, did I also state the larger question it belongs to and what the next experiment would be?
+1. For every number you lean on: baseline, repeats, conditions, and the artifact it came from. Remove or caveat any that lacks one.
+2. Which claims come from your own runs, which from a worker, which from a source section you read, which from an abstract? Label them, and say what you did not read, run, or check.
+3. What is the boring alternative explanation, and what ruled it out? Are the examples shown random?
+4. Does the report claim more certainty than the phase supports? If the question was narrow, does it say what larger question it belongs to?

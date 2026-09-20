@@ -4,13 +4,13 @@ The log is the product of a research session as much as the answer. Decisions tr
 
 ## Log table
 
-Keep one file per campaign (for example `research-log.md` in the working directory, or the user's chosen tracker). Append a row per run or per probe. Write the prediction before the result.
+For a campaign, or work that crosses sessions or agents, keep one log file where the user wants it (a `research-log.md` next to the code, or their tracker). For a short question the log is your own context; do not leave files in the user's repo. Append a row per run or probe, and write the prediction before the result.
 
 | Run | Phase | Hypothesis | Predicted | Config / commit | Result | Verdict | Next |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | r07 | Understand | LR warmup is why r05 diverged | loss stable through step 200 | `a1b2c3d`, lr 3e-4, warmup 100 | stable, val 2.41 vs best 2.44 | keep, new best | try warmup 50 |
 
-Verdicts are `keep`, `revert`, `inconclusive`, or `failed` with a reason. Rejected and failed runs stay in the table. A result without its baseline and conditions is not a result.
+Verdicts are `keep`, `revert`, `inconclusive`, or `failed` with a reason. Reverted and failed runs stay in the table. Record per-seed numbers, not only the mean. A result without its baseline and conditions is not a result.
 
 Keep a short highlights section above the table: the current best, the two or three most surprising findings, and open anomalies.
 
