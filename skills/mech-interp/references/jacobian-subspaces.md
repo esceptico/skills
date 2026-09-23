@@ -2,7 +2,7 @@
 
 The lab's core method. Helpers live in `lab.interp` (`~/src/labs/src/lab/interp.py`) (`jacobian`, `spectrum`,
 `random_basis`, `ablate`, `next_token_loss`, `bootstrap`); the worked experiment is
-`~/src/labs/templates/interp/experiment.py`. Extend those rather than writing new hooks.
+`~/src/labs/src/lab/templates/interp/experiment.py`. Extend those rather than writing new hooks.
 What counts as evidence for a claim is the ml-research evidence standard
 (`~/src/skills/skills/ml-research/references/mech-interp.md`); this file covers the method.
 
