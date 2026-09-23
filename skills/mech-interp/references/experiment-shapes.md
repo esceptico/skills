@@ -14,7 +14,7 @@ cd campaigns/j48-subspace
 lab new exp jac --template interp && cd experiments/jac
 ```
 
-The `interp` template (`~/src/labs/templates/interp/`) already builds J over prompts, ablates the
+The `interp` template (`~/src/labs/src/lab/templates/interp/`) already builds J over prompts, ablates the
 top k after block `src`, compares with random bases (and optionally SAE features), and logs three
 figures plus `summary(loss_increase, vs_random, sigma_ratio_k)`. Start there and change the
 question, not the scaffolding.
