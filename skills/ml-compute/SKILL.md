@@ -14,7 +14,7 @@ Get the experiment onto the right machine, spend little, and learn from every ru
 - **Loss on hidden states, a new architecture, activations, anything custom:** Modal, or local while it fits. Tinker and Prime only see token logprobs and rewards.
 - **RL on a task that exists, or can be written, as a verifiers environment:** Prime Hosted Training. You write a TOML file; rollouts, trainer and inference are hosted, and it reports real cost.
 - **LoRA SFT, DPO, distillation, RL with your own Python loop or a custom logprob loss, on a model Tinker hosts:** Tinker. You write the loop; they run the GPUs.
-- **Many hours on one dedicated box, a persistent disk, SSH:** RunPod (see the runpod skills).
+- **Many hours on one dedicated box, a persistent disk, SSH:** a RunPod pod, created and deleted with `runpodctl`, always with `--terminate-after` ([RunPod pods](references/routing.md#runpod-pods)).
 - **First run of any new script:** local, tiny. A two-minute smoke run catches most bugs before paid compute does.
 
 Details, limits and cost models: [routing](references/routing.md).
@@ -32,7 +32,7 @@ Details, limits and cost models: [routing](references/routing.md).
 When a lab is present (`labs.toml` above the working directory, or `lab` on PATH), use it rather than ad-hoc scripts:
 
 - `lab templates` / `lab new exp <name> --template tinker-sft|prime-rl|modal-custom|interp` for a working starting point on each route.
-- `lab run -H "hypothesis" -P "prediction" -- <cmd>` for every run; any script goes to a Modal GPU with `lab run -- modal run -m lab.modal_app --script train.py --gpu A10`.
+- `lab run -H "hypothesis" -P "prediction" -- <cmd>` for every run; any script goes to a Modal GPU with `lab run -- modal run -m lab.modal_app --script train.py --gpu A10`, or to a pod with `lab run -- python -m lab.ssh_app --host root@<ip> --port <port> --script train.py`.
 - `lab bench <model> --tasks ...` records lm-eval accuracy with ECE, Brier and reliability figures; `lab fetch model|dataset <repo>[@rev]` pins downloads; `lab doctor` says which services are ready; `lab smoke` checks the templates still run.
 - Log with `lab.log` / `lab.summary` / `lab.cost`, and figures with `lab.fig`, so runs stay comparable on `lab board`.
 

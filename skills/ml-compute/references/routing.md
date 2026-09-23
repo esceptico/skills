@@ -46,8 +46,33 @@ Details worth knowing before you route:
   need checkpoints on a Volume (the lab mounts `lab-data` at `/data`) and a `timeout` set;
   check Modal's current maximum function timeout before planning a multi-day run.
 - **RunPod** suits long dedicated runs where a persistent disk and SSH matter more than
-  per-second billing. Use the runpod skills for provisioning. Prime also rents pods
+  per-second billing. See [RunPod pods](#runpod-pods) below. Prime also rents pods
   (`prime availability list`, `prime pods create`).
+
+## RunPod pods
+
+A pod bills from creation to deletion, idle or not, so every pod gets a deadline and a delete.
+`runpodctl` (v2) does the whole lifecycle and prints JSON:
+
+```bash
+runpodctl gpu list                                    # ids and availability
+runpodctl pod create --name lab-r012 --template-id runpod-torch-v21 \
+  --gpu-id "NVIDIA GeForce RTX 4090" --terminate-after 2026-09-24T06:00:00Z
+runpodctl ssh info <pod-id>                           # host, port and key for ssh
+lab run -H "..." -P "..." -- python -m lab.ssh_app --host root@<ip> --port <port> --script train.py
+runpodctl pod delete <pod-id>                         # also after a failed run
+```
+
+- `--terminate-after` is the safety net: RunPod deletes the pod then even if nobody else does. Set it
+  to the expected run time plus a margin. Checkpoint to the pod's volume if the run may outlive it.
+- Delete the pod when the run ends, whatever its outcome, then check `runpodctl pod list` shows
+  nothing left behind that you created.
+- `lab.ssh_app` ships the experiment, `locked/` and `lib/`, installs `requirements.txt`, and brings
+  metrics, figures and artifacts back into the run even when the script fails.
+- What it cost: `runpodctl billing pods --pod-id <id> --grouping podId` reports the billed `amount`
+  and `timeBilledMs`. It may lag the run; the lab budget does not count RunPod.
+- The old `runpodctl create pod` / `remove pod` / `get pod` commands are deprecated. When this
+  section disagrees with `runpodctl <cmd> --help`, trust the CLI and fix this section.
 
 ## Cost models
 
@@ -56,7 +81,7 @@ Details worth knowing before you route:
 | Tinker | per model, by tokens; cost tier tracks active parameters for MoE | tinker-docs.thinkingmachines.ai/tinker/models/ | no: `tinker-sft` records tokens, the bill is your account's |
 | Prime Hosted Training | per 1M tokens, separate Input, Output and Train columns | `prime train models` | yes: `prime-rl` records the total from `prime train usage <run_id>` |
 | Modal | per GPU-second while the container runs | modal.com/pricing | no: your Modal bill |
-| RunPod | per hour while the pod exists, including idle time | runpod.io pricing | no: your RunPod bill |
+| RunPod | per hour while the pod exists, including idle time | `runpodctl gpu list`, runpod.io pricing | no: `runpodctl billing pods` reports what was billed |
 | Local | electricity and your time | n/a | no |
 
 The lab records only amounts a service reports, so the campaign budget caps Prime spend and
