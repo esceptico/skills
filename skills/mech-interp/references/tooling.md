@@ -6,7 +6,7 @@ Pin versions in the experiment's `requirements.txt` and log them in the run.
 
 | need | default | why |
 |---|---|---|
-| Jacobians, subspace ablation, patching, steering on HF models up to what fits on one GPU | plain torch hooks, `lib/interp.py` | exact HF weights, full autograd, no reimplementation to trust |
+| Jacobians, subspace ablation, patching, steering on HF models up to what fits on one GPU | plain torch hooks, `lab.interp` | exact HF weights, full autograd, no reimplementation to trust |
 | models too large to host, forward-only questions | nnsight + NDIF | the same trace code runs remotely |
 | head/neuron circuits, attention patterns, DLA, pretrained SAE hook names | TransformerLens | named hook for every activation |
 | learned subspaces (DAS), shareable intervention configs | pyvene, or hand-rolled DAS | trainable rotations with position/head bookkeeping |
@@ -113,4 +113,4 @@ SAE health, measured on your own held-out text at the site you use:
   architecture. What matters for a control is that the SAE is healthy on your data: a basis
   that reconstructs poorly there is a weak comparison.
 
-Sources: Orchestra AI-Research-SKILLs 773a529 (MIT): nnsight/SKILL.md, nnsight/references/{README,api,tutorials}.md, transformer-lens/SKILL.md, transformer-lens/references/{README,api,tutorials}.md, pyvene/SKILL.md, pyvene/references/{README,api,tutorials}.md, saelens/SKILL.md, saelens/references/{README,api,tutorials}.md; lab `lib/interp.py`, `templates/interp/requirements.txt`.
+Sources: Orchestra AI-Research-SKILLs 773a529 (MIT): nnsight/SKILL.md, nnsight/references/{README,api,tutorials}.md, transformer-lens/SKILL.md, transformer-lens/references/{README,api,tutorials}.md, pyvene/SKILL.md, pyvene/references/{README,api,tutorials}.md, saelens/SKILL.md, saelens/references/{README,api,tutorials}.md; lab `src/lab/interp.py`, `src/lab/templates/interp/requirements.txt`.

@@ -1,6 +1,6 @@
 # Jacobian subspaces between residual layers
 
-The lab's core method. Helpers live in `~/src/labs/lib/interp.py` (`jacobian`, `spectrum`,
+The lab's core method. Helpers live in `lab.interp` (`~/src/labs/src/lab/interp.py`) (`jacobian`, `spectrum`,
 `random_basis`, `ablate`, `next_token_loss`, `bootstrap`); the worked experiment is
 `~/src/labs/templates/interp/experiment.py`. Extend those rather than writing new hooks.
 What counts as evidence for a claim is the ml-research evidence standard
@@ -117,4 +117,4 @@ The evidence standard lists the general controls; these are the ones this method
 - Each VJP backpropagates through the whole prefix up to `dst`, so cost grows with prompt
   length; short prompts give many more Jacobians per GPU-hour.
 
-Sources: Orchestra AI-Research-SKILLs 773a529 (MIT): transformer-lens/SKILL.md, transformer-lens/references/api.md, nnsight/references/tutorials.md; lab `lib/interp.py`, `templates/interp/`.
+Sources: Orchestra AI-Research-SKILLs 773a529 (MIT): transformer-lens/SKILL.md, transformer-lens/references/api.md, nnsight/references/tutorials.md; lab `src/lab/interp.py`, `src/lab/templates/interp/`.

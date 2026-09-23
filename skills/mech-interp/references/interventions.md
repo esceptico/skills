@@ -1,9 +1,9 @@
 # Interventions: patching, steering, interchange
 
-Sketches follow `~/src/labs/lib/interp.py`: a forward hook on `interp.blocks(model)[L]` (the
+Sketches follow `lab.interp` (`~/src/labs/src/lab/interp.py`): a forward hook on `interp.blocks(model)[L]` (the
 residual after block L), `_hidden`/`_replace` for tuple or tensor block outputs, float32 maths,
 a context manager that always removes the hook. A sketch that proves useful belongs in
-`lib/interp.py` next to `ablate`. What a result shows (necessity, sufficiency, specificity) is
+`lab.interp` next to `ablate`. What a result shows (necessity, sufficiency, specificity) is
 judged by the ml-research evidence standard (`~/src/skills/skills/ml-research/references/mech-interp.md`).
 
 ## Activation patching
@@ -127,4 +127,4 @@ Cautions specific to learned subspaces:
 - The Orchestra pyvene DAS tutorial trains a self-intervention toward a fixed token: that is
   steering by optimisation, not DAS, which needs base/source pairs and counterfactual labels.
 
-Sources: Orchestra AI-Research-SKILLs 773a529 (MIT): pyvene/SKILL.md, pyvene/references/api.md, pyvene/references/tutorials.md, transformer-lens/references/tutorials.md, nnsight/references/tutorials.md, saelens/references/tutorials.md; lab `lib/interp.py`.
+Sources: Orchestra AI-Research-SKILLs 773a529 (MIT): pyvene/SKILL.md, pyvene/references/api.md, pyvene/references/tutorials.md, transformer-lens/references/tutorials.md, nnsight/references/tutorials.md, saelens/references/tutorials.md; lab `src/lab/interp.py`.

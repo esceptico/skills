@@ -109,4 +109,4 @@ lab run -H "..." -P "..." -- modal run -m lab.modal_app --script experiment.py \
 5. Scale the one or two surviving claims; write them in `findings.md` under
    "What we believe now", with run ids.
 
-Sources: Orchestra AI-Research-SKILLs 773a529 (MIT): transformer-lens/references/tutorials.md (patching heatmap shape); lab `README.md`, `templates/interp/{README.md,experiment.py}`, `src/lab/fig.py`, `src/lab/modal_app.py`, `src/lab/cli.py`.
+Sources: Orchestra AI-Research-SKILLs 773a529 (MIT): transformer-lens/references/tutorials.md (patching heatmap shape); lab `README.md`, `src/lab/templates/interp/{README.md,experiment.py}`, `src/lab/fig.py`, `src/lab/modal_app.py`, `src/lab/cli.py`.
