@@ -91,7 +91,7 @@ eval scores. Loss going down doesn't mean the task is improving; the eval does.
 5. Step 1: loss finite and in the expected range (≈ ln(vocab) for an untrained head; a
    pretrained LM on in-domain chat starts much lower). KL ≈ 0 if you log it.
 6. Steps 5-10: loss moving, grad norm stable, logged LR matches the schedule, throughput (and
-   cost per step) in line with the estimate.
+   tokens per step) as expected.
 7. Read a few samples (RL: rollouts) before walking away.
 
 Sources: Orchestra AI-Research-SKILLs 773a529, MIT (`10-optimization/ml-training-recipes/SKILL.md`,

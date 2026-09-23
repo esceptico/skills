@@ -51,22 +51,20 @@ Details worth knowing before you route:
 
 ## Cost models
 
-| Service | Billed by | Where to read the price | Record it in the lab |
+| Service | Billed by | Where to read the price | In the lab's budget |
 |---|---|---|---|
-| Tinker | per model, by tokens (the lab template takes `--price-per-mtok`); cost tier tracks active parameters for MoE | tinker-docs.thinkingmachines.ai/tinker/models/ (no numbers are in the cookbook repo; read the page on the day) | `--price-per-mtok` in `tinker-sft`, or `cost(usd, "tinker")` |
-| Prime Hosted Training | per 1M tokens, separate Input, Output and Train columns, with promo prices shown when active | `prime train models` (live) | `prime-rl` logs the real total from `prime train usage <run_id>` |
-| Modal | per GPU-second while the container runs | modal.com/pricing | `lab.modal_app` logs GPU seconds at list price (an estimate; CPU and memory not counted) |
-| RunPod | per hour while the pod exists, including idle time | runpod.io pricing (not verified here) | `cost(usd, "runpod")` by hand |
-| Local | electricity and your time | n/a | nothing |
+| Tinker | per model, by tokens; cost tier tracks active parameters for MoE | tinker-docs.thinkingmachines.ai/tinker/models/ | no: `tinker-sft` records tokens, the bill is your account's |
+| Prime Hosted Training | per 1M tokens, separate Input, Output and Train columns | `prime train models` | yes: `prime-rl` records the total from `prime train usage <run_id>` |
+| Modal | per GPU-second while the container runs | modal.com/pricing | no: your Modal bill |
+| RunPod | per hour while the pod exists, including idle time | runpod.io pricing | no: your RunPod bill |
+| Local | electricity and your time | n/a | no |
 
-Modal GPU list prices as recorded in the lab's `lab/modal_app.py` (read 2026-09-23 from
-modal.com/pricing), in USD per second: T4 0.000164, L4 0.000222, A10 0.000306,
-L40S 0.000542, A100-40GB 0.000583, A100-80GB 0.000694, H100 0.001097, H200 0.001261,
-B200 0.001736, B300 0.001972. That is roughly $3.95/h for an H100 and $0.59/h for a T4.
+The lab records only amounts a service reports, so the campaign budget caps Prime spend and
+anything your code passes to `cost()`; read prices on the day rather than from notes like this one.
 
 Cost reasoning that usually holds:
 - RL cost on token-priced services is dominated by rollouts:
-  `steps x batch_size x rollouts_per_example x (prompt + completion tokens)`. Estimate it from
+  `steps x batch_size x rollouts_per_example x (prompt + completion tokens)`. Check the live price in
   `prime train models` before raising `max_steps`, `rollouts_per_example` or `max_tokens`.
 - On Tinker and Prime you pay for tokens, not wall time. Modal bills while a container is up
   (keep-warm included); a pod bills until you stop it, so pods pay off only when the GPU stays busy.

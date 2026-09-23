@@ -25,7 +25,7 @@ Details, limits and cost models: [routing](references/routing.md).
 - Read the first minutes of every run: loss at step 0 matches what the task implies, it falls, the gradient norm is sane, throughput is what you expected. [Training recipes](references/training-recipes.md) has LR and optimizer defaults and a triage for runs that spike, NaN, OOM or plateau.
 - For RL, check the reward on hand-made good and bad examples before training, and watch reward, length and KL together; a rising reward alone is how reward hacking looks too. [RL post-training](references/rl-post-training.md).
 - Keep the eval fixed and outside the code you change, and report calibration when the model outputs probabilities. [Evaluation](references/evaluation.md) covers lm-evaluation-harness and ECE/Brier.
-- Put a number on cost before a long run; token-priced RL is dominated by rollouts.
+- Check the provider's live price before a long run; token-priced RL is dominated by rollouts.
 
 ## With a lab
 

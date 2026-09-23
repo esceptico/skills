@@ -1,6 +1,6 @@
 # Running, logging, remote machines, reports
 
-Generated from `~/src/labs` at 243fb15 2026-09-23 by `scripts/skill_reference.py`. Regenerate after changing the lab; if this disagrees with `lab <cmd> --help`, the CLI wins.
+Generated from `~/src/labs` at cc04a44 2026-09-23 by `scripts/skill_reference.py`. Regenerate after changing the lab; if this disagrees with `lab <cmd> --help`, the CLI wins.
 
 ## Logging from inside a run
 
@@ -39,8 +39,9 @@ Run any experiment script on a Modal GPU and bring its lab outputs home.
 The experiment folder, the campaign's locked/ folder and the lab's lib/ are shipped into the
 container; `requirements.txt` in the experiment folder is installed into the image (cached).
 Inside, the script logs with `lab.log` / `lab.fig` as usual; when it ends, metrics, figures and
-artifacts are copied into the local run, and the GPU time is logged as an estimated cost.
-Big outputs (checkpoints) belong on the `lab-data` volume mounted at /data, not in artifacts.
+artifacts are copied into the local run. Checkpoints belong in $LAB_DATA_DIR (the `lab-data`
+volume), not in artifacts. Cost is not logged: Modal bills your account, and lab records only
+amounts a service reports.
 
 Needs `pip install modal` and `modal token new` once.
 
@@ -51,33 +52,31 @@ Options of the local entrypoint: `--script` (default train.py), `--args` (quoted
 Run an experiment script on any machine you can SSH into (a RunPod or Prime pod, Lambda, your own box).
 
     lab run -H "..." -- python -m lab.ssh_app --host root@203.0.113.7 --port 22042 \
-        --script train.py --args "--lr 3e-4" --usd-per-hour 2.49
+        --script train.py --args "--lr 3e-4"
 
 Copies the experiment folder, the campaign's locked/, the lab's lib/ and the lab package to
 <root>/<run id> with rsync, installs requirements.txt if present, runs the script there with
-output streamed here, copies metrics, figures and artifacts back into the run, and logs
-elapsed time × --usd-per-hour as cost. HF_TOKEN is passed in a 0600 env file, not argv.
+output streamed here, and copies metrics, figures and artifacts back into the run. HF_TOKEN is
+passed in a 0600 env file, not argv. Cost is not logged: lab records only amounts a service reports.
 Checkpoints: write them under --root on the machine (a network volume on RunPod), not artifacts.
 `--host local` runs the same steps without SSH (for testing the path).
 
 ```
 usage: ssh_app.py [-h] --host HOST [--port PORT] [--key KEY] [--root ROOT]
                   [--script SCRIPT] [--args ARGS] [--python PYTHON]
-                  [--no-setup] [--usd-per-hour USD_PER_HOUR]
+                  [--no-setup]
 
 options:
-  -h, --help            show this help message and exit
-  --host HOST           user@host, or 'local'
+  -h, --help       show this help message and exit
+  --host HOST      user@host, or 'local'
   --port PORT
-  --key KEY             ssh identity file
-  --root ROOT           working directory on the machine (relative to home, or
-                        absolute)
+  --key KEY        ssh identity file
+  --root ROOT      working directory on the machine (relative to home, or
+                   absolute)
   --script SCRIPT
   --args ARGS
   --python PYTHON
-  --no-setup            skip pip install -r requirements.txt
-  --usd-per-hour USD_PER_HOUR
-                        machine price, to log cost
+  --no-setup       skip pip install -r requirements.txt
 ```
 
 ## Remote outputs: lab.remote

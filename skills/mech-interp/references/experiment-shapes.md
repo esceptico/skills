@@ -89,8 +89,8 @@ lab run -H "..." -P "..." -- modal run -m lab.modal_app --script experiment.py \
   --args "--model Qwen/Qwen3-8B --src 14 --dst 24 --vectorize" --gpu A100-80GB
 ```
 
-- GPU time is logged as cost at Modal's list price (an estimate); once `budget_usd` is
-  reached, new runs do not start.
+- Modal time is billed to your Modal account and not recorded as cost; `budget_usd` counts
+  only amounts a service reports.
 - At d = 4096 a full J is 4096 VJPs per prompt. `--vectorize` batches them if memory allows;
   otherwise use the randomised top-k method in `jacobian-subspaces.md`.
 - Big outputs (saved Jacobians, activation dumps) go on the `lab-data` volume at `/data`, not

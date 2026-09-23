@@ -1,6 +1,6 @@
 # lab.fig reference
 
-Generated from `~/src/labs` at 243fb15 2026-09-23 by `scripts/skill_reference.py`. Regenerate after changing the lab; if this disagrees with `lab <cmd> --help`, the CLI wins.
+Generated from `~/src/labs` at cc04a44 2026-09-23 by `scripts/skill_reference.py`. Regenerate after changing the lab; if this disagrees with `lab <cmd> --help`, the CLI wins.
 
 
 Figures as data: each call writes a JSON spec into the run, and the board, reports and blog

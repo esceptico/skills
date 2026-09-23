@@ -34,7 +34,7 @@ Inside the code: `from lab import log, summary, cost, artifact, fig`. Log curves
 - Branch with `lab new exp <name> --from <run>` instead of copying files, so the board can diff code against the parent.
 - A helper used by a second experiment belongs in the lab's `lib/` (on every run's path, snapshotted and hashed per run).
 - Set `noise_floor` in `campaign.toml` once seeds have measured it, so deltas inside it read as inconclusive.
-- Paid services: check `lab budget`, start with the smallest config, and let `prime-rl` / `lab.modal_app` / `lab.ssh_app` log cost.
+- Paid services: start with the smallest config. The budget counts only real amounts (Prime's reported spend, `cost()` calls); Modal, SSH machines and Tinker bill your accounts directly.
 
 ## When something is off
 
