@@ -1,6 +1,6 @@
 # Failure modes and self-review
 
-Documented ways agents fail at research ([How Do Agents Fail on AutoResearch](https://arxiv.org/abs/2608.14905), overclaiming studies, METR reports, Sakana AI Scientist critiques, Nanda's list of junior-researcher mistakes). The self-review below is short on purpose; it must change the report, and if none of its four questions changed anything, look again.
+Documented ways agents fail at research ([How Do Agents Fail on AutoResearch](https://arxiv.org/abs/2608.14905), overclaiming studies, METR reports, Sakana AI Scientist critiques, Nanda's list of junior-researcher mistakes, Orchestra's ARA rigor reviewer). The self-review below is short on purpose; it must change the report, and if none of its five questions changed anything, look again.
 
 ## Failure modes
 
@@ -27,3 +27,4 @@ Answer these in writing for anything larger than a quick answer, then edit the r
 2. Which claims come from your own runs, which from a worker, which from a source section you read, which from an abstract? Label them, and say what you did not read, run, or check.
 3. What is the boring alternative explanation, and what ruled it out? Are the examples shown random?
 4. Does the report claim more certainty than the phase supports? If the question was narrow, does it say what larger question it belongs to?
+5. Does each claim have the kind of evidence its wording needs? "Causes" needs an isolating ablation, "generalizes" needs conditions that vary, "improves" needs a matched baseline, "typically" needs a representative sample. Does the metric measure what the claim says, or a narrower proxy of it? Does any claim lean on something the log marks reverted, and does any logged run cut against a claim without being mentioned? Rescope or cut whichever claim fails.

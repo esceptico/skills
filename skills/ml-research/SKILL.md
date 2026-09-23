@@ -2,7 +2,7 @@
 name: ml-research
 description: Drive ML research as an iterative loop (frame → hypothesis → cheapest experiment or read → observe → keep, revert, or inconclusive → log → decide) with primary-source evidence, experiment hygiene, and honest reporting. Use for any ML research question, method or model selection, training or eval campaign, ablation, reproducing a paper result, a training run that is not learning, a mechanistic-interpretability claim, or any "figure out whether X works" task, including when the user asks only a narrow question.
 metadata:
-  version: "2.1.0"
+  version: "2.2.0"
 ---
 
 # ML Research
@@ -26,6 +26,18 @@ A pass is one hypothesis tested by the cheapest thing that could change your min
 
 Phases, timers, skepticism drills, and campaigns in detail: [research loop](references/research-loop.md).
 
+## Using a lab
+
+If a lab is present (a `labs.toml` above the working directory, or `lab` on PATH), let it hold the record instead of hand-kept files; the loop itself does not change. Without one, everything above works as before, and a single question does not need a lab.
+
+- **Frame:** `lab new campaign <name> --metric <m> --goal min|max --budget <usd> --question "..."`. Data prep and the evaluator go in `locked/`, which is hashed on the first run. Run the unchanged pipeline first and keep it as run zero; once you have measured the noise floor, write it as `noise_floor` in `campaign.toml` so the board shades the band.
+- **Hypothesis and run:** `lab run -H "<hypothesis>" -P "<prediction>" -- <cmd>`. The flags are the prediction-before-result rule, so fill them in honestly rather than after a peek.
+- **Verdict:** `lab verdict <run> keep|revert|inconclusive|failed -m "<why>"`. Judge each run before starting the next, since `keep` moves the baseline the next comparison uses.
+- **Branch:** `lab new exp <name> --from <run>` starts from a run's exact code, so the board can diff against its parent; `--template <t>` starts a new kind of experiment (`lab templates`).
+- **Log:** run records replace the log table. Beliefs go in `findings.md` as bullets under "What we believe now", each citing its run ids; dead ends go under "What we tried that did not work".
+- **Eval changes:** a "locked/ changed" warning means runs on either side are no longer comparable. `lab lock --accept "why"` is for an intended, reported change, not a way to clear the warning.
+- **Showing progress:** `lab board --open` is the staircase, lineage, and per-run diffs; figures made with `lab.fig` inside a run land in its record instead of loose files.
+
 ## Guidance to load
 
 - Training, fine-tuning, evaluation, or any run you launch: [experiment hygiene](references/experiment-hygiene.md). Read it before the first run, not after the first confusing result.
@@ -34,6 +46,8 @@ Phases, timers, skepticism drills, and campaigns in detail: [research loop](refe
 - Circuits, probes, SAEs, patching, steering, any causal-mechanism claim: [mechanistic interpretability evidence](references/mech-interp.md).
 - Anything that depends on a model, dataset, or codebase existing and working: [artifact verification](references/artifact-verification.md).
 - Before reporting on anything larger than a quick answer: [failure modes](references/failure-modes.md), a short self-review that must change the report.
+
+Running the jobs themselves (which service, LR and optimizer defaults, RL rewards, lm-eval and calibration) is the `ml-compute` skill; interpretability methods and tools are the `mech-interp` skill.
 
 Load only what the current pass needs. A paper question in Explore needs the evidence reference, not the hygiene ladder.
 
