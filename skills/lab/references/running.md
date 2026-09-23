@@ -1,12 +1,12 @@
 # Running, logging, remote machines, reports
 
-Generated from `~/src/labs` at 03c7d92 2026-09-23 by `scripts/skill_reference.py`. Regenerate after changing the lab; if this disagrees with `lab <cmd> --help`, the CLI wins.
+Generated from `~/src/labs` at 243fb15 2026-09-23 by `scripts/skill_reference.py`. Regenerate after changing the lab; if this disagrees with `lab <cmd> --help`, the CLI wins.
 
 ## Logging from inside a run
 
-Helpers for code running under `lab run`.
+Logging from code running under `lab run`.
 
-    from lab import log, summary, cost, artifact
+    from lab import log, summary, cost, artifact, fig
 
     log(step=100, loss=0.41, jac_rank=37)   # a point on a curve
     summary(val_loss=0.38)                  # the numbers this run is judged by
@@ -14,6 +14,10 @@ Helpers for code running under `lab run`.
     artifact("spectrum.png", "Jacobian spectrum, layer 12")
 
 Outside `lab run` every call does nothing, so the same script runs standalone.
+
+This module, `lab.fig`, `lab.events`, `lab.remote` and the runnable entrypoints (`lab.modal_app`,
+`lab.ssh_app`, `lab.bench_run`, `lab.hf_fetch`) run inside experiment environments and use the
+standard library only. The CLI's internals live in `lab.core`, `lab.views` and `lab.ops`.
 
 Environment set by `lab run`: `LAB_RUN_DIR`, `LAB_RUN_ID`, `LAB_CAMPAIGN_DIR`, `LAB_LOCKED_DIR`, `LAB_HOME`; `PYTHONPATH` gets the `lab` package and `lib/`, so any interpreter or venv can `from lab import ...` and import `lib/` modules.
 
@@ -85,25 +89,20 @@ Remote code logs into its own scratch run directory (LAB_RUN_DIR there); when it
 
 ## Benchmarks: lab bench
 
-Runs lm-evaluation-harness inside a lab run and records accuracy plus calibration.
+Run lm-evaluation-harness inside a lab run; record every metric, plus ECE and Brier for multiple-choice tasks.
 
-Started by `lab bench` as:
-    uv run --with "lm-eval[hf]" python -m lab.bench_run --model hf --model-args pretrained=X --tasks a,b
-
-Every numeric metric in lm-eval's results becomes `summary("<task>/<metric>")`. For
-multiple-choice tasks the per-sample log-likelihoods give a probability over the choices
-(softmax), from which ECE, Brier and a reliability diagram are computed. Format checked
-against lm-evaluation-harness d6de8164 (2026-09-14): samples_<task>_<date>.jsonl with
-`filtered_resps` = [[loglikelihood, is_greedy], ...] per choice and `target` = gold.
+Started by `lab bench`. For multiple-choice tasks, a softmax over the choices' log-likelihoods gives a
+probability per choice. The samples format was checked against lm-eval d6de8164: `filtered_resps` holds
+[loglikelihood, is_greedy] per choice (written as strings), and `target` is the gold index or answer text.
 
 ## Reports: lab report
 
 `lab report <campaign>`: a self-contained interactive page from report.md (or findings.md).
 
-Markdown, plus:
+Markdown (CommonMark + tables), plus:
   - run ids (r008) become links that show the run's evidence on hover;
-  - `{{figure <name> runs=r003,r008,r004 labels="k = 4,k = 8,k = 16"}}` on its own line embeds
-    that figure from each listed run; with several runs it becomes a switcher over the recorded
-    runs only (compare toggles, steppers), never interpolated;
+  - a line `{{figure <name> runs=r003,r008,r004 labels="k = 4,k = 8,k = 16" label="k"}}` embeds that
+    figure from each listed run; with several runs it becomes a switcher over those recorded runs
+    only (compare toggles, steppers), never interpolated;
   - the page ends with the runs cited, what did not work, and how to reproduce each cited run.
-Figure names are the file stems in runs/<id>/figures/ (a slug of the title).
+Figure names are the file stems in runs/<id>/figures/ (a slug of the figure's title).
