@@ -1,10 +1,10 @@
 # Interventions: patching, steering, interchange
 
-Sketches follow `lab.interp` (`~/src/labs/src/lab/interp.py`): a forward hook on `interp.blocks(model)[L]` (the
+Sketches follow `lab.interp` (signatures in the `lab` skill's running.md): a forward hook on `interp.blocks(model)[L]` (the
 residual after block L), `_hidden`/`_replace` for tuple or tensor block outputs, float32 maths,
 a context manager that always removes the hook. A sketch that proves useful belongs in
 `lab.interp` next to `ablate`. What a result shows (necessity, sufficiency, specificity) is
-judged by the ml-research evidence standard (`~/src/skills/skills/ml-research/references/mech-interp.md`).
+judged by the ml-research evidence standard (the `ml-research` skill's references/mech-interp.md).
 
 ## Activation patching
 

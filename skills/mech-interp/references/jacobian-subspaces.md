@@ -1,10 +1,11 @@
 # Jacobian subspaces between residual layers
 
-The lab's core method. Helpers live in `lab.interp` (`~/src/labs/src/lab/interp.py`) (`jacobian`, `spectrum`,
-`random_basis`, `ablate`, `next_token_loss`, `bootstrap`); the worked experiment is
-`~/src/labs/src/lab/templates/interp/experiment.py`. Extend those rather than writing new hooks.
+The method the `interp` template is built on. Helpers live in `lab.interp` (`jacobian`, `spectrum`,
+`random_basis`, `ablate`, `next_token_loss`, `bootstrap`; signatures in the `lab` skill's running.md), and the
+worked experiment is the template's `experiment.py` (`lab new exp <name> --template interp`). Extend those rather
+than writing new hooks.
 What counts as evidence for a claim is the ml-research evidence standard
-(`~/src/skills/skills/ml-research/references/mech-interp.md`); this file covers the method.
+(the `ml-research` skill's references/mech-interp.md); this file covers the method.
 
 ## What J measures
 

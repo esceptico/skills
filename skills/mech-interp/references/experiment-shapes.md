@@ -1,9 +1,9 @@
 # Experiment shapes: an interp campaign in the lab
 
-Commands come from `~/src/labs/README.md`; read it for anything not covered here. The research
+Commands come from the `lab` skill and `lab <cmd> --help`; read them for anything not covered here. The research
 loop itself (hypothesis, cheapest test, keep/revert, log) is the ml-research skill's; what an
 interp claim needs as evidence is the ml-research evidence standard
-(`~/src/skills/skills/ml-research/references/mech-interp.md`). This file is about the plumbing.
+(the `ml-research` skill's references/mech-interp.md). This file is about the plumbing.
 
 ## Set up
 
@@ -14,7 +14,7 @@ cd campaigns/j48-subspace
 lab new exp jac --template interp && cd experiments/jac
 ```
 
-The `interp` template (`~/src/labs/src/lab/templates/interp/`) already builds J over prompts, ablates the
+The `interp` template already builds J over prompts, ablates the
 top k after block `src`, compares with random bases (and optionally SAE features), and logs three
 figures plus `summary(loss_increase, vs_random, sigma_ratio_k)`. Start there and change the
 question, not the scaffolding.
@@ -69,7 +69,7 @@ Each call writes a JSON spec into the run; outside `lab run` it only returns the
 - Linearisation checks and steering sweeps: `fig.line` of effect against ε or alpha, with the
   linear prediction or the random-direction control as a second series.
 Other types exist (`scatter`, `hist`, `bars`, `reliability`, `multiples`, `table`); see
-`~/src/labs/src/lab/fig.py` for their arguments.
+the `lab` skill's figures.md for their arguments.
 
 ## Fast loop, then scale
 
