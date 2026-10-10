@@ -1,18 +1,12 @@
 # Verification
 
-## Status
-
-Not started. Implementation completion does not imply verification.
-
 ## Evidence
 
-| ID | Related work | Check | Expected | Observed | Result | Evidence and time |
-| --- | --- | --- | --- | --- | --- | --- |
+<!-- ID starts with V-. Item names the I- ids it proves. Result: pass, fail, blocked, or not-run. -->
 
-## Failures and gaps
+| ID | Item | Check | Expected | Observed | Result |
+| --- | --- | --- | --- | --- | --- |
+
+## Gaps
 
 - No verification performed.
-
-## Outcome
-
-Not verified.

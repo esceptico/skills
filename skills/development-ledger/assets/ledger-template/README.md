@@ -7,13 +7,9 @@
 | Field | Value |
 | --- | --- |
 | State | researching |
-| Active phase | research |
 | Created | {{CREATED_AT}} |
-| Last updated | {{UPDATED_AT}} |
-| Last consolidated | not yet |
 | Codebase branch | {{BRANCH}} |
 | Codebase revision | {{REVISION}} |
-| Sources checked through | code: {{REVISION}}; web: not checked |
 
 ## Original task — verbatim
 
@@ -25,7 +21,7 @@ None.
 
 ## Current synthesis
 
-Research has not yet been consolidated.
+Not yet consolidated.
 
 ## Decisions
 
@@ -41,7 +37,7 @@ Begin the first scoped research pass.
 
 ## Details
 
-<!-- Keep only the sections and phase files useful for this task; update these links if files are omitted. -->
+<!-- Delete phase files this task does not need, and their links. -->
 
 - [Research](research.md)
 - [Implementation](implementation.md)

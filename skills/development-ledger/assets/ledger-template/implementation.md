@@ -1,18 +1,13 @@
 # Implementation
 
-> A checked item means implemented, not verified.
-
-## Intended outcome
-
-Not yet planned.
+> `[x]` means implemented, not verified. Proof goes in verification.md.
 
 ## Checklist
 
-- [ ] **I-01 — Define concrete work**
-  - Outcome: Replace this placeholder when implementation planning is requested.
+- [ ] **I-01 — Replace with concrete work**
   - Scope: To be determined.
-  - Required verification: To be determined.
+  - Verify: To be determined.
 
 ## Notes
 
-- No implementation performed.
+- None.

@@ -1,21 +1,12 @@
 # Research
 
-## Surface research
+## Findings
 
-- **Scope**: Not yet defined.
-- **Sources inspected**: None.
-- **Observations**: None.
-- **Negative evidence**: None.
+<!-- Type: fact, inference, or proposal. Evidence: path:line, command with observed output, or URL with access date. -->
 
-## Consolidated findings
-
-| ID | Type | Claim | Evidence | Implication | Confidence | Last checked |
-| --- | --- | --- | --- | --- | --- | --- |
+| ID | Type | Claim | Evidence | Confidence |
+| --- | --- | --- | --- | --- |
 
 ## Conflicts and gaps
 
 - None recorded.
-
-## Supporting material
-
-- None.
