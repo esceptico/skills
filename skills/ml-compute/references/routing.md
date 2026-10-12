@@ -73,12 +73,14 @@ runpodctl pod delete <pod-id>                         # also after a failed run
 #!/bin/sh
 # watchdog.sh <seconds>: delete this pod after <seconds>, with the pod-scoped key RunPod injects.
 set -eu
+case ${1:-} in ''|*[!0-9]*) echo "watchdog: usage: watchdog.sh <seconds>; NOT armed" >&2; exit 1;; esac
 env1() { tr '\0' '\n' < /proc/1/environ | sed -n "s/^$1=//p"; }
 POD=${RUNPOD_POD_ID:-$(env1 RUNPOD_POD_ID)}
 KEY=${RUNPOD_API_KEY:-$(env1 RUNPOD_API_KEY)}
 [ -n "$POD" ] && [ -n "$KEY" ] || { echo "watchdog: no RUNPOD_POD_ID or RUNPOD_API_KEY; NOT armed" >&2; exit 1; }
-nohup sh -c "sleep $1; curl -fsS -X DELETE https://rest.runpod.io/v1/pods/$POD -H 'Authorization: Bearer $KEY'" \
-  > /root/watchdog.log 2>&1 &
+# The key travels in the environment, not the command line, so `ps` does not show it.
+T=$1 POD=$POD KEY=$KEY nohup sh -c 'sleep "$T"; curl -fsS -X DELETE "https://rest.runpod.io/v1/pods/$POD" -H "Authorization: Bearer $KEY"' \
+  < /dev/null > /root/watchdog.log 2>&1 &
 echo "watchdog: pod $POD deleted in $1 s (pid $!)"
 ```
 
