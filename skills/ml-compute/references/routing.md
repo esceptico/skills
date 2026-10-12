@@ -56,15 +56,39 @@ A pod bills from creation to deletion, idle or not, so every pod gets a deadline
 
 ```bash
 runpodctl gpu list                                    # ids and availability
-runpodctl pod create --name lab-r012 --template-id runpod-torch-v21 \
-  --gpu-id "NVIDIA GeForce RTX 4090" --terminate-after 2026-09-24T06:00:00Z
+runpodctl pod create --name lab-r012 --template-id runpod-torch-v21 --gpu-id "NVIDIA GeForce RTX 4090"
 runpodctl ssh info <pod-id>                           # host, port and key for ssh
+# the deadline: a watchdog on the pod deletes it with the pod's own key; see the notes below
+scp -P <port> watchdog.sh root@<ip>:/root/ && ssh -p <port> root@<ip> 'sh /root/watchdog.sh 21600'
 lab run -H "..." -P "..." -- python -m lab.ssh_app --host root@<ip> --port <port> --script train.py
 runpodctl pod delete <pod-id>                         # also after a failed run
 ```
 
-- `--terminate-after` is the safety net: RunPod deletes the pod then even if nobody else does. Set it
-  to the expected run time plus a margin. Checkpoint to the pod's volume if the run may outlive it.
+- `--terminate-after` on `runpodctl pod create` never worked; runpod/runpodctl PR #330 (merged
+  2026-08-27) removed it. Do not rely on it, whatever `--help` or other guides say.
+- `watchdog.sh` (below) checks the pod id and key before it arms and exits non-zero if either is
+  missing: an ssh session often lacks the pod's environment, which only PID 1 is sure to have.
+
+```sh
+#!/bin/sh
+# watchdog.sh <seconds>: delete this pod after <seconds>, with the pod-scoped key RunPod injects.
+set -eu
+case ${1:-} in ''|*[!0-9]*) echo "watchdog: usage: watchdog.sh <seconds>; NOT armed" >&2; exit 1;; esac
+env1() { tr '\0' '\n' < /proc/1/environ | sed -n "s/^$1=//p"; }
+POD=${RUNPOD_POD_ID:-$(env1 RUNPOD_POD_ID)}
+KEY=${RUNPOD_API_KEY:-$(env1 RUNPOD_API_KEY)}
+[ -n "$POD" ] && [ -n "$KEY" ] || { echo "watchdog: no RUNPOD_POD_ID or RUNPOD_API_KEY; NOT armed" >&2; exit 1; }
+# The key travels in the environment, not the command line, so `ps` does not show it.
+T=$1 POD=$POD KEY=$KEY nohup sh -c 'sleep "$T"; curl -fsS -X DELETE "https://rest.runpod.io/v1/pods/$POD" -H "Authorization: Bearer $KEY"' \
+  < /dev/null > /root/watchdog.log 2>&1 &
+echo "watchdog: pod $POD deleted in $1 s (pid $!)"
+```
+
+- The deadline is the watchdog: it runs on the pod and deletes it with the pod-scoped key RunPod injects,
+  even when your session is gone. Set it to the expected run time plus a margin, and test it once on a
+  cheap pod with a short sleep before relying on it. Checkpoint to the pod's volume if the run may outlive it.
+- Check from outside too: at every check-back, `runpodctl pod list` shows what is still billing; delete
+  any pod past its deadline.
 - Delete the pod when the run ends, whatever its outcome, then check `runpodctl pod list` shows
   nothing left behind that you created.
 - `lab.ssh_app` ships the experiment, `locked/` and `lib/`, installs `requirements.txt`, and brings
