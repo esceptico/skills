@@ -18,7 +18,7 @@ Keep a short highlights section above the table: the current best, the two or th
 
 When a session ends, context is compacted, a worker returns to the control loop, or work moves to another agent, write a record with these headings. Keep it declarative; it describes the state, not future plans dressed as facts.
 
-- **Question and constraints:** what is being decided, the budget, what is off limits.
+- **Question and constraints:** what is being decided, the budget if one was given and what is left, what is off limits.
 - **Decisions:** what was chosen and what was rejected, with the reason. Include implicit choices (seed, data slice, eval protocol) that later work must not contradict.
 - **Current best:** the run, its config, its number, its baseline.
 - **Verification and failures:** exact commands, working directory, pass and fail counts, the decisive diagnostics, checks that were skipped.
@@ -30,12 +30,12 @@ Distinguish evidence you observed from evidence a subagent or a paper reported. 
 
 ## Campaign in a repository
 
-When a campaign is authorized and lives in a repository, keep the record in the repo, in this shape. Skip all of it for a single question.
+When a campaign lives in a repository, keep the record in the repo, in this shape. Skip all of it for a single question.
 
 - **One journal file** (for example `PLAN.md`) that opens with the current decision, then a corrections section that retracts earlier claims the evidence no longer supports, then dated notes that say what did not work as plainly as what did. Every claim links to the result file it rests on.
 - **One folder per trial** (`runs/<study>/NN-<label>/`) holding the resolved config, the result, and the raw log. A study keeps one ledger with a line per trial: id, status, objective, verdict, cost. The log table above is that ledger in prose form.
 - **Tables and figures are generated from result files** by a script checked into the repo. No number in the journal or the README is typed by hand, so a regenerated table cannot disagree with the runs.
 - **Evaluation data is frozen** with a manifest of hashes and versions. New data is a new version, never an edit. The test split is read once, at the end, and the journal names the run it was read for.
-- **Cost per run** (GPU time or dollars) sits next to the metric, so a small gain that cost most of the budget reads as what it is.
+- **Cost per run** (GPU time, or dollars a service reported) sits next to the metric.
 - **Shared code is promoted, not copied.** While a change is being tried, keep it in the trial's own code, so the diff against its parent shows exactly what changed. Once a helper (a loader, a hook, a plotting function) is used by a second experiment and has stopped changing, move it to one shared module (`lib/` in a lab) rather than copying it again. The evaluator stays in the frozen eval path, not the shared module. Shared code is part of what ran: a lab snapshots `lib/` into each run and records its hash, so the diff against the parent shows a `lib/` edit; elsewhere, record the shared module's commit with the run. After editing something a kept run used, re-run the baseline before comparing across the edit.
 

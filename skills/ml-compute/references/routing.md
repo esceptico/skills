@@ -1,6 +1,6 @@
 # Routing: which service for which job
 
-Pick by what the experiment has to touch, then by cost. The lab records the run either way
+Pick by what the experiment has to touch, then by how long it runs and what it needs on disk. The lab records the run either way
 (`lab run -- <cmd>`), and each route has a template: `tinker-sft`, `prime-rl`, `modal-custom`, `interp`.
 
 ## Quick decision
@@ -16,7 +16,7 @@ Pick by what the experiment has to touch, then by cost. The lab records the run 
 4. **A single run that needs a dedicated GPU box for many hours or days** (big full fine-tune,
    long pretraining, data you want sitting on a disk)? RunPod or a Prime pod.
 5. **Small model, short debug loop, CPU-bound eval?** Local. Usually the first stop for any new
-   script, because a 2-minute local smoke test catches most bugs before paid compute.
+   script, because a 2-minute local smoke test catches most bugs before the real run.
 
 ## What each can and cannot do
 
@@ -51,23 +51,27 @@ Details worth knowing before you route:
 
 ## RunPod pods
 
-A pod bills from creation to deletion, idle or not, so every pod gets a deadline and a delete.
-`runpodctl` (v2) does the whole lifecycle and prints JSON:
+A pod bills from creation to deletion, idle or not. Create it through the lab, so the campaign records it,
+and remove it with the lab when the experiment is over:
 
 ```bash
 runpodctl gpu list                                    # ids and availability
-runpodctl pod create --name lab-r012 --template-id runpod-torch-v21 --gpu-id "NVIDIA GeForce RTX 4090"
+lab up -- runpodctl pod create --template-id runpod-torch-v21 --gpu-id "NVIDIA GeForce RTX 4090"
 runpodctl ssh info <pod-id>                           # host, port and key for ssh
-# the deadline: a watchdog on the pod deletes it with the pod's own key; see the notes below
-scp -P <port> watchdog.sh root@<ip>:/root/ && ssh -p <port> root@<ip> 'sh /root/watchdog.sh 21600'
+lab run --kind smoke -H "pipeline runs" -- python -m lab.ssh_app --host root@<ip> --port <port> --script train.py
 lab run -H "..." -P "..." -- python -m lab.ssh_app --host root@<ip> --port <port> --script train.py
-runpodctl pod delete <pod-id>                         # also after a failed run
+lab down                                              # deletes the pods the campaign recorded; --data also volumes
 ```
 
-- `--terminate-after` on `runpodctl pod create` never worked; runpod/runpodctl PR #330 (merged
-  2026-08-27) removed it. Do not rely on it, whatever `--help` or other guides say.
-- `watchdog.sh` (below) checks the pod id and key before it arms and exits non-zero if either is
-  missing: an ssh session often lacks the pod's environment, which only PID 1 is sure to have.
+- `lab status` lists the campaign's live machines; `lab close` names any still live. A pod made another
+  way: `lab track runpod-pod <id>`.
+- `lab.ssh_app` refuses a machine without rsync, the interpreter or a writable `--root`, retries SSH and
+  rsync calls that fail on the connection, and on a new machine accepts only a smoke run first.
+
+A safety timer on the pod, only if the user asked for one: `--terminate-after` on `runpodctl pod create`
+was not enforced (runpod/runpodctl PR #330), so use `watchdog.sh` below. It checks the pod id and key
+before it arms and exits non-zero if either is missing (an ssh session often lacks the pod's environment,
+which only PID 1 is sure to have):
 
 ```sh
 #!/bin/sh
@@ -84,13 +88,6 @@ T=$1 POD=$POD KEY=$KEY nohup sh -c 'sleep "$T"; curl -fsS -X DELETE "https://res
 echo "watchdog: pod $POD deleted in $1 s (pid $!)"
 ```
 
-- The deadline is the watchdog: it runs on the pod and deletes it with the pod-scoped key RunPod injects,
-  even when your session is gone. Set it to the expected run time plus a margin, and test it once on a
-  cheap pod with a short sleep before relying on it. Checkpoint to the pod's volume if the run may outlive it.
-- Check from outside too: at every check-back, `runpodctl pod list` shows what is still billing; delete
-  any pod past its deadline.
-- Delete the pod when the run ends, whatever its outcome, then check `runpodctl pod list` shows
-  nothing left behind that you created.
 - `lab.ssh_app` ships the experiment, `locked/` and `lib/`, installs `requirements.txt`, and brings
   metrics, figures and artifacts back into the run even when the script fails.
 - What it cost: `runpodctl billing pods --pod-id <id> --grouping podId` reports the billed `amount`
@@ -108,8 +105,8 @@ echo "watchdog: pod $POD deleted in $1 s (pid $!)"
 | RunPod | per hour while the pod exists, including idle time | `runpodctl gpu list`, runpod.io pricing | no: `runpodctl billing pods` reports what was billed |
 | Local | electricity and your time | n/a | no |
 
-The lab records only amounts a service reports, so the campaign budget caps Prime spend and
-anything your code passes to `cost()`; read prices on the day rather than from notes like this one.
+The lab records only amounts a service reports, so Prime spend and anything your code passes to `cost()`
+count toward the campaign budget; read prices on the day rather than from notes like this one.
 
 Cost reasoning that usually holds:
 - RL cost on token-priced services is dominated by rollouts:
@@ -117,8 +114,8 @@ Cost reasoning that usually holds:
   `prime train models` before raising `max_steps`, `rollouts_per_example` or `max_tokens`.
 - On Tinker and Prime you pay for tokens, not wall time. Modal bills while a container is up
   (keep-warm included); a pod bills until you stop it, so pods pay off only when the GPU stays busy.
-- Budget the smoke test: a few steps on the smallest model in the family first, because config
-  errors are the most common way to burn money.
+- Smoke test first: a few steps on the smallest model in the family, because config errors are the
+  most common way a real run fails.
 
 ## When the route is wrong
 
