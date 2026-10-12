@@ -30,9 +30,9 @@ Phases, timers, skepticism drills, and campaigns in detail: [research loop](refe
 
 If a lab is present (a `lab.toml` above the working directory, or `lab` on PATH), let it hold the record instead of hand-kept files; the loop itself does not change. Without one, everything above works as before, and a single question does not need a lab.
 
-- **Frame:** `lab new campaign <name> --metric <m> --goal min|max --trivial <value> --budget <usd> --question "..."`, then write the `plan` steps in `campaign.toml`. Data prep and the evaluator go in `locked/`, which is hashed on the first run. Anchors run as `lab run --anchor trivial|recipe|published`; once you have measured the noise floor, write it as `noise_floor`.
+- **Frame:** `lab new campaign <name> --metric <m> --goal min|max --trivial <value> --budget <usd> --question "..."`, then write the `plan` steps in `campaign.toml`. Data prep and the evaluator go in `locked/`, which is hashed on the first run. Anchors run as `lab run --anchor trivial|recipe|published`; one that cannot exist is waived with a reason (`waive = { published = "why" }`), never skipped; once you have measured the noise floor, write it as `noise_floor`.
 - **Hypothesis and run:** `lab run --step <id> -H "<hypothesis>" -P "<prediction>" -D "if X do A, else B" -- <cmd>`, or `--off-plan "why"`; pipeline checks are `--kind smoke`. Fill the flags in before a peek.
-- **Verdict:** `lab verdict <run> keep|revert|inconclusive|failed|reference -m "<why>" [--control <run>]`. Judge each run before the next. `keep` is refused at trivial level; `reference` records a yardstick. Read `lab status` warnings; they are the plan and the gates.
+- **Verdict:** `lab verdict <run> keep|revert|inconclusive|failed|reference -m "<why>" [--control <run>]`. Judge each run before the next. `keep` is refused at trivial level and while an anchor is missing; a run with neither `--step` nor `--off-plan` is refused; `reference` records a yardstick. Read `lab status` warnings; they are the plan and the gates.
 - **Log:** run records replace the log table; `lab board --open` is the page to show, branching and eval changes are in the `lab` skill. Beliefs go in `findings.md` as bullets under "What we believe now", each citing its run ids; dead ends go under "What we tried that did not work".
 
 ## Guidance to load
