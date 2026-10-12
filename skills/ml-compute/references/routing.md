@@ -56,15 +56,22 @@ A pod bills from creation to deletion, idle or not, so every pod gets a deadline
 
 ```bash
 runpodctl gpu list                                    # ids and availability
-runpodctl pod create --name lab-r012 --template-id runpod-torch-v21 \
-  --gpu-id "NVIDIA GeForce RTX 4090" --terminate-after 2026-09-24T06:00:00Z
+runpodctl pod create --name lab-r012 --template-id runpod-torch-v21 --gpu-id "NVIDIA GeForce RTX 4090"
 runpodctl ssh info <pod-id>                           # host, port and key for ssh
+# the deadline: a watchdog on the pod deletes it with the pod's own key (RUNPOD_POD_ID, RUNPOD_API_KEY)
+ssh -p <port> root@<ip> 'nohup sh -c "sleep 21600; curl -s -X DELETE \
+  https://rest.runpod.io/v1/pods/\$RUNPOD_POD_ID -H \"Authorization: Bearer \$RUNPOD_API_KEY\"" >/dev/null 2>&1 &'
 lab run -H "..." -P "..." -- python -m lab.ssh_app --host root@<ip> --port <port> --script train.py
 runpodctl pod delete <pod-id>                         # also after a failed run
 ```
 
-- `--terminate-after` is the safety net: RunPod deletes the pod then even if nobody else does. Set it
-  to the expected run time plus a margin. Checkpoint to the pod's volume if the run may outlive it.
+- `--terminate-after` on `runpodctl pod create` was never enforced (runpod/runpodctl
+  PR #330) and was removed in CLI 2.12. Do not rely on it, whatever `--help` or other guides say.
+- The deadline is the watchdog: it runs on the pod and deletes it with the pod-scoped key RunPod injects,
+  even when your session is gone. Set it to the expected run time plus a margin, and test it once on a
+  cheap pod with a short sleep before relying on it. Checkpoint to the pod's volume if the run may outlive it.
+- Check from outside too: at every check-back, `runpodctl pod list` shows what is still billing; delete
+  any pod past its deadline.
 - Delete the pod when the run ends, whatever its outcome, then check `runpodctl pod list` shows
   nothing left behind that you created.
 - `lab.ssh_app` ships the experiment, `locked/` and `lib/`, installs `requirements.txt`, and brings

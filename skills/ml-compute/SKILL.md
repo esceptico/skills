@@ -14,7 +14,7 @@ Get the experiment onto the right machine, spend little, and learn from every ru
 - **Loss on hidden states, a new architecture, activations, anything custom:** Modal, or local while it fits. Tinker and Prime only see token logprobs and rewards.
 - **RL on a task that exists, or can be written, as a verifiers environment:** Prime Hosted Training. You write a TOML file; rollouts, trainer and inference are hosted, and it reports real cost.
 - **LoRA SFT, DPO, distillation, RL with your own Python loop or a custom logprob loss, on a model Tinker hosts:** Tinker. You write the loop; they run the GPUs.
-- **Many hours on one dedicated box, a persistent disk, SSH:** a RunPod pod, created and deleted with `runpodctl`, always with `--terminate-after` ([RunPod pods](references/routing.md#runpod-pods)).
+- **Many hours on one dedicated box, a persistent disk, SSH:** a RunPod pod, created and deleted with `runpodctl`, always with a pod-side watchdog (`--terminate-after` is not enforced) ([RunPod pods](references/routing.md#runpod-pods)).
 - **First run of any new script:** local, tiny. A two-minute smoke run catches most bugs before paid compute does.
 
 Details, limits and cost models: [routing](references/routing.md).

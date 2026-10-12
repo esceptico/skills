@@ -4,7 +4,7 @@ The ladder below is Karpathy's [Recipe for Training Neural Networks](https://kar
 
 ## Before the first run
 
-First, run the existing pipeline unchanged and record its number as run zero; everything else is measured against it. Then:
+First, place the anchors: the trivial baseline (majority class or chance, per task), the strongest known recipe through its upstream code on your data, and the standard eval on a published model. Then run your own pipeline unchanged as run zero; it is an internal reference, not one of the anchors. If run zero does not beat the trivial baseline, nothing below is worth tuning until it does. Then:
 
 1. **Become one with the data.** Spend real time scanning examples, label distributions, duplicates, corrupt items, and biases. Look at the exact tensors that enter the network, after preprocessing and augmentation.
 2. **Skeleton and dumb baselines.** Fix the seed. Turn augmentation and other fanciness off. Pick the simplest model that can possibly work. Verify loss at init matches the expected value (for example `-log(1/n_classes)`). Initialize well.
