@@ -2,7 +2,7 @@
 name: ml-research
 description: Drive ML research as an iterative loop (frame → hypothesis → cheapest experiment or read → observe → keep, revert, or inconclusive → log → decide) with primary-source evidence, experiment hygiene, and honest reporting. Use for any ML research question, method or model selection, training or eval campaign, ablation, reproducing a paper result, a training run that is not learning, a mechanistic-interpretability claim, or any "figure out whether X works" task, including when the user asks only a narrow question.
 metadata:
-  version: "2.3.0"
+  version: "2.4.0"
 ---
 
 # ML Research
@@ -15,11 +15,11 @@ Match the effort to the question. A small question gets a paragraph with its evi
 
 A pass is one hypothesis tested by the cheapest thing that could change your mind: a read, a probe, or a run.
 
-0. **Frame, once, and write the plan.** Restate the question, what is already known (a quick scan of the literature and the codebase, so you do not reinvent it), the budget, and what done looks like as something checkable. Name the metric others report on this question. Then write the plan: ordered steps, each with the decision it makes, and show it to the user before real compute. Step 0 places the anchors (below). Follow the plan; before a run that changes its order or its content (another method, model, data or eval), tell the user what changed and which claim it weakens. If the question as asked will not answer what the user actually wants, say so.
+0. **Frame, once, and write the plan.** Restate the question, what is already known (a quick scan of the literature and the codebase, so you do not reinvent it), and what done looks like as something checkable. Name the metric others report on this question. Then write the plan: ordered steps, each with the decision it makes, and show it to the user. Step 0 places the anchors (below). A budget the owner gave is a target to use for results: plan to spend it on the most informative experiments. Follow the plan; before a run that changes its order or its content (another method, model, data or eval), tell the user what changed and which claim it weakens. If the question as asked will not answer what the user actually wants, say so.
 1. **Know the phase.** Explore (gain information), Understand (weigh named hypotheses against each other), or Distill (compress to 1–3 defensible claims). Say it only when it changes the plan. Most premature narrow answers come from acting as if in Understand while still in Explore, where the right move is many cheap probes and a long look at the data.
 2. **State the hypothesis, what would falsify it, and the decision.** "If X, do A; else B." If every outcome leads to the same next step, the run decides nothing: skip it. Also name the boring alternative explanation you must rule out.
-3. **Do the cheapest decisive thing.** Smallest model, smallest data, shortest budget, one change at a time. For a read, the primary section rather than the abstract. Before a run of more than roughly half an hour, ask whether a smaller one answers the same question.
-4. **Observe against the anchors.** Before any novel arm, place three anchors on your eval, because they answer different questions: a trivial baseline (majority class or chance, per task), the strongest known recipe run through its upstream code on your data, and the standard eval run on at least one published model. An internal reference (your own first run, a variant of your method) is none of these. A number means nothing without its baseline, its noise floor, and its evaluation conditions. Correctness before performance: a run that fails its checks scores nothing.
+3. **Do the smallest decisive thing.** The smallest model, data and run that answer the question, one change at a time. For a read, the primary section rather than the abstract.
+4. **Observe against the anchors.** Before any novel arm, place three anchors on your eval, because they answer different questions: a trivial baseline (majority class or chance, per task), the strongest known recipe run through its upstream code on your data, and the standard eval run on at least one published model. An internal reference (your own first run, a variant of your method) is none of these. A number means nothing without its baseline, its noise floor, and its evaluation conditions. Measure the noise floor once, by repeating a run unchanged or a bootstrap over the eval set: repeats are only for that, then decide. After the anchors and the noise floor, fan out: run several arms at once, preferring those expected to beat 2× the noise floor; smaller effects return noise. Correctness before performance: a run that fails its checks scores nothing.
 5. **Verdict: keep, revert, inconclusive, or failed.** Keep an improvement over the current best outside the noise floor under matched conditions; it becomes the new baseline. A kept win names its simplest other explanation (format or prompt adaptation, more steps or data, a lucky seed) and the control run that rules it out, or says it is not ruled out. Inside the noise floor is inconclusive, not a small win. **A result at trivial level is not a result:** stop comparing arms and diagnose the pipeline (overfit one tiny batch, check labels and the loss at init, look at the predictions, run the known recipe). Two runs there in a row and every further arm returns noise.
 6. **Log it.** Hypothesis, prediction, config or commit, result, verdict, next ([format](references/research-log.md)). Predictions go in before results. Reverted and failed attempts stay. A campaign that lives in a repository keeps its journal, trial folders, and generated tables there ([shape](references/research-log.md#campaign-in-a-repository)).
 7. **Decide.** Zoom in (converging evidence, or a genuine surprise), zoom out (nothing learned for a while, or the question was ill-posed), scale up (the small result survived its sanity checks), or write up (you could defend each claim to a skeptic).
@@ -30,9 +30,9 @@ Phases, timers, skepticism drills, and campaigns in detail: [research loop](refe
 
 If a lab is present (a `lab.toml` above the working directory, or `lab` on PATH), let it hold the record instead of hand-kept files; the loop itself does not change. Without one, everything above works as before, and a single question does not need a lab.
 
-- **Frame:** `lab new campaign <name> --metric <m> --goal min|max --trivial <value> --budget <usd> --question "..."`, then write the `plan` steps in `campaign.toml`. Data prep and the evaluator go in `locked/`, which is hashed on the first run. Anchors run as `lab run --anchor trivial|recipe|published`; one that cannot exist is waived with a reason (`waive = { published = "why" }`), never skipped; once you have measured the noise floor, write it as `noise_floor`.
+- **Frame:** `lab new campaign <name> --metric <m> --goal min|max --trivial <value> --question "..."` (`--budget <usd>` when the owner gave one), then write the `plan` steps in `campaign.toml`. Data prep and the evaluator go in `locked/`, which is hashed on the first run. Anchors run as `lab run --anchor trivial|recipe|published`; one that cannot exist is waived with a reason (`waive = { published = "why" }`), never skipped. The noise floor is a repeat (`lab run --repeat <run>`) or `noise_floor`; experiment runs wait for it.
 - **Hypothesis and run:** `lab run --step <id> -H "<hypothesis>" -P "<prediction>" -D "if X do A, else B" -- <cmd>`, or `--off-plan "why"`; pipeline checks are `--kind smoke`. Fill the flags in before a peek.
-- **Verdict:** `lab verdict <run> keep|revert|inconclusive|failed|reference -m "<why>" [--control <run>]`. Judge each run before the next. `keep` is refused at trivial level and while an anchor is missing; a run with neither `--step` nor `--off-plan` is refused; `reference` records a yardstick. Read `lab status` warnings; they are the plan and the gates.
+- **Verdict:** `lab verdict <run> keep|revert|inconclusive|failed|reference -m "<why>" [--control <run>]`. Judge each run before the next. `keep` is refused at trivial level, while an anchor or the noise floor is missing, and for an experiment without `--control`; a run with neither `--step` nor `--off-plan` is refused; `reference` records a yardstick. `lab close -m "why"` lists untested plan steps and the budget left; `lab down` removes the machines the campaign created. Read `lab status` warnings; they are the plan and the gates.
 - **Log:** run records replace the log table; `lab board --open` is the page to show, branching and eval changes are in the `lab` skill. Beliefs go in `findings.md` as bullets under "What we believe now", each citing its run ids; dead ends go under "What we tried that did not work".
 
 ## Guidance to load
@@ -50,9 +50,9 @@ Running the jobs themselves (which service, LR and optimizer defaults, RL reward
 
 Read the primary sections behind any load-bearing claim; abstracts and search snippets are for discovery only. Tie every result to its model or checkpoint, data, metric, baseline, and evaluation conditions. Vendor and paper numbers are reported results, not independent validation. Check recent releases before recommending; state the evidence cutoff. Look at the actual data and the actual outputs, never only the aggregate. Evaluate a repository, benchmark, or API through its own interface and bring the results back, rather than rebuilding it in a notebook and calling the number comparable.
 
-## Scope and authorization
+## Scope and money
 
-Research on its own does not authorize paid compute, training, or destructive changes to the user's environment. Within an authorized budget, keep going: make a reasonable assumption, verify it, and continue. If you believe you are blocked, show the evidence and keep looking for safe progress. Do not stop at a literature summary when experiments were authorized. Propose a discriminating experiment when uncertainty actually affects the decision; a paper explanation does not need an experiment plan attached.
+Do not spend money the owner did not give. When they give a budget, it is for results: plan to use it on the most informative experiments, and report spend plainly at check-ins. Keep going: make a reasonable assumption, verify it, and continue. If you believe you are blocked, show the evidence and keep looking for safe progress. Do not stop at a literature summary when experiments were asked for. Propose a discriminating experiment when uncertainty actually affects the decision; a paper explanation does not need an experiment plan attached.
 
 ## Control loop and workers
 
@@ -73,7 +73,8 @@ Run as one control-loop agent that owns the question, the log, and every verdict
 - **The plan quietly changed.** The build differs from the plan (method, model, data, eval) and nobody said so.
 - **Format gain reported as learning.** A fine-tune that only taught the output format; the control is a prompted or few-shot baseline.
 - **Scope-changing fixes.** On an error you shrink the task (shorter sequences, LoRA for full tuning, another dataset); fix it minimally or ask.
-- **A flag in `--help` trusted as a safety net.** Test the auto-stop, the timeout, the budget cap once before relying on it.
+- **Seeds instead of a decision.** More repeats of the same arm after the noise floor is known; they decide nothing.
+- **Stopping with budget and plan left.** Untested plan steps and unspent budget mean the campaign is not done.
 
 ## Never
 
@@ -81,7 +82,7 @@ Run as one control-loop agent that owns the question, the log, and every verdict
 - Select the reported result against the test set, or report the best of several runs as the result.
 - Invent error bars or conditions you did not run, or a score for a run that failed.
 - Drop failed, reverted, or interrupted runs from the log.
-- Spend paid compute, train, or mutate the user's environment without authorization.
+- Spend money the owner did not give, or change the user's environment beyond the task.
 
 ## Done
 
@@ -93,4 +94,4 @@ Lead with the answer, then the evidence, then the caveats, and size it to the ta
 
 For a single question: the answer in a sentence; confidence and its basis (verified by, or inferred from); the evidence with its conditions; what you could not verify; the one caveat most likely to make this wrong; the cheapest next step, if uncertainty matters.
 
-For a campaign: the answer; confidence and the one thing that would change it; the current best with its baseline, delta, conditions, and per-run numbers; what changed, in order; tried and reverted, one line each so nobody repeats them; untested; next experiments with expected cost; links to commits, logs, and configs.
+For a campaign: the answer; confidence and the one thing that would change it; the current best with its baseline, delta, conditions, and per-run numbers; what changed, in order; tried and reverted, one line each so nobody repeats them; untested; spend; next experiments; links to commits, logs, and configs.
