@@ -1,5 +1,7 @@
 # Skills
 
+- `bfs` — Explore research directions breadth-first, compare alternatives, and return an evidence-backed shortlist.
+- `dfs` — Investigate one research question deeply, test its evidence, and backtrack when answered or blocked.
 - `development-ledger` — Preserve development context from research through implementation and verification.
 - `human-interface-design` — Design and review humane, platform-native interfaces using Apple HIG principles.
 - `orchestrate-long-running-tasks` — Coordinate delegated Codex tasks with model-aware routing, verification, and periodic supervision. Based on [this tweet](https://x.com/reach_vb/status/2099630906772222068).
