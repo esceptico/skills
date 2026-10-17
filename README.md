@@ -1,5 +1,6 @@
 # Skills
 
+- `basis` — Design or repair software behavior with a small set of cohesive responsibilities and minimal machinery: behavior matrix, capability basis, reduced overlap, holistic fixes that stay small.
 - `bfs` — Explore research directions breadth-first, compare alternatives, and return an evidence-backed shortlist.
 - `dfs` — Investigate one research question deeply, test its evidence, and backtrack when answered or blocked.
 - `development-ledger` — Preserve development context from research through implementation and verification.

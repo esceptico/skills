@@ -1,0 +1,4 @@
+interface:
+  display_name: "Basis"
+  short_description: "Coherent behavior with minimal machinery"
+  default_prompt: "Use $basis to find the simplest coherent solution, reuse existing responsibilities, and check the relevant behavior."
