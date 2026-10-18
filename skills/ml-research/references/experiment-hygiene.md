@@ -6,7 +6,9 @@ The ladder below is Karpathy's [Recipe for Training Neural Networks](https://kar
 
 First, place the anchors: the trivial baseline (majority class or chance, per task), the strongest known recipe through its upstream code on your data, and the standard eval on a published model. Then run your own pipeline unchanged as run zero; it is an internal reference, not one of the anchors. If run zero does not beat the trivial baseline, nothing below is worth tuning until it does. Then:
 
-1. **Become one with the data.** Spend real time scanning examples, label distributions, duplicates, corrupt items, and biases. Look at the exact tensors that enter the network, after preprocessing and augmentation.
+1. **Become one with the data.** Spend real time scanning examples, label distributions, duplicates, corrupt items, and biases. Look at the exact tensors that enter the network, after preprocessing and augmentation. Before a paid fine-tune, find what the strongest peers on the task trained on (source, distinct examples, eval, backbone, training code), and read a few dozen random samples as the model sees them: every input type, images included, and every answer shape.
+
+   **Leakage and shortcuts.** Check train against eval for exact and near-duplicate items (passages and spans, not only ids), items with conflicting labels, and test splits used as a training source. For generated data, score a heuristic that exploits the generator's patterns (always the first, always the smallest); the model must beat it.
 2. **Skeleton and dumb baselines.** Fix the seed. Turn augmentation and other fanciness off. Pick the simplest model that can possibly work. Verify loss at init matches the expected value (for example `-log(1/n_classes)`). Initialize well.
 3. **Three baselines before any idea:** a human or heuristic baseline, an input-independent baseline (zero or shuffled inputs, which must be worse), and the dumbest end-to-end model.
 4. **Overfit one batch.** Two or three examples to near-zero loss, and check the predictions match the labels. If this fails, nothing downstream is trustworthy.
@@ -15,11 +17,11 @@ First, place the anchors: the trivial baseline (majority class or chance, per ta
 
 ## During iteration
 
-- **One change at a time.** Add one feature, one signal, or one trick, confirm the expected effect, then the next. A run that changes two things answers no question.
+- **One change at a time.** Add one feature, one signal, or one trick, confirm the expected effect, then the next. A run that changes two things answers no question. A control matches its arm in everything but that change: same data and sampled ids, steps, eval, and starting weights; log the seeds, ids and an initial-weights fingerprint so the match can be shown.
 - **Don't be a hero.** Copy the nearest working recipe from the most related paper, Adam at 3e-4, and standard defaults. Distrust learning-rate decay defaults borrowed from a different dataset size.
 - **Fixed budget, fixed metric, frozen evaluator.** Compare runs at the same wall-clock or token budget. One headline metric decides the verdict; a small fixed set of guard checks (a held-out split, the train-versus-validation gap, output length or format, throughput) decides whether the win is real. Fix both, and the evaluation code, before the first run and do not touch them during the campaign. Evaluate on the full evaluation set, not a smoothed batch number.
 - **Know the noise floor.** Before crediting a change, know how much a null change moves the metric: a repeated baseline, or a bootstrap over the evaluation set, whichever is cheap. A change inside that band is not a win, whatever its sign. Seed sweeps are one way to see it, not a requirement, and seed spread on its own does not decide anything.
-- **Correctness before performance.** A run that fails its correctness checks gets no performance score. Compile, unit-test, and sanity-check outputs before timing or benchmarking. Structural checks guard against "wins" that changed what was measured rather than how well.
+- **Correctness before performance.** A run that fails its correctness checks gets no performance score. Compile, unit-test, and sanity-check outputs before timing or benchmarking. Count what the eval refused, truncated or skipped (option or length limits); it is zero, or reported with the score. Structural checks guard against "wins" that changed what was measured rather than how well.
 - **Typed feedback.** A failed run gets its error trace and a fix attempt. A passed run gets a measurement and an improvement attempt. Do not treat both the same.
 - **Verdict.** Keep an improvement over the current best outside the noise floor under matched conditions; it becomes the new baseline. Inside the noise floor is inconclusive. A crashed or voided run is failed. Everything else is reverted, and every outcome goes in the log with its reason.
 
@@ -29,7 +31,7 @@ Order of returns: more real data, then augmentation, then pretrained weights, th
 
 ## Reproducibility
 
-Record for every run: code revision, model and data revisions, resolved configuration, seeds, dependency versions, hardware, and the exact commands. A repository name or a moving branch pins nothing. Same-execution repeatability is not cross-path equality across shapes, dtypes, or kernels; state which one you measured. Retain failed runs and the config that produced them.
+Record for every run: code revision, model and data revisions, resolved configuration, seeds, dependency versions, hardware, and the exact commands. Record what the run performed, read from the run itself (steps taken, distinct examples seen, the machine's GPU and driver), not what the plan or a copied config says; where they differ, record both. A repository name or a moving branch pins nothing. Same-execution repeatability is not cross-path equality across shapes, dtypes, or kernels; state which one you measured. Retain failed runs and the config that produced them.
 
 ## Progress view for campaigns
 

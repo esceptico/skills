@@ -2,7 +2,7 @@
 name: ml-research
 description: Drive ML research as an iterative loop (frame → hypothesis → cheapest experiment or read → observe → keep, revert, or inconclusive → log → decide) with primary-source evidence, experiment hygiene, and honest reporting. Use for any ML research question, method or model selection, training or eval campaign, ablation, reproducing a paper result, a training run that is not learning, a mechanistic-interpretability claim, or any "figure out whether X works" task, including when the user asks only a narrow question.
 metadata:
-  version: "2.4.0"
+  version: "2.5.0"
 ---
 
 # ML Research
@@ -32,7 +32,7 @@ If a lab is present (a `lab.toml` above the working directory, or `lab` on PATH)
 
 - **Frame:** `lab new campaign <name> --metric <m> --goal min|max --trivial <value> --question "..."` (`--budget <usd>` when the owner gave one), then write the `plan` steps in `campaign.toml`. Data prep and the evaluator go in `locked/`, which is hashed on the first run. Anchors run as `lab run --anchor trivial|recipe|published`; one that cannot exist is waived with a reason (`waive = { published = "why" }`), never skipped. The noise floor is a repeat (`lab run --repeat <run>`) or `noise_floor`; experiment runs wait for it.
 - **Hypothesis and run:** `lab run --step <id> -H "<hypothesis>" -P "<prediction>" -D "if X do A, else B" -- <cmd>`, or `--off-plan "why"`; pipeline checks are `--kind smoke`. Fill the flags in before a peek.
-- **Verdict:** `lab verdict <run> keep|revert|inconclusive|failed|reference -m "<why>" [--control <run>]`. Judge each run before the next. `keep` is refused at trivial level, while an anchor or the noise floor is missing, and for an experiment without `--control`; a run with neither `--step` nor `--off-plan` is refused; `reference` records a yardstick. `lab close -m "why"` lists untested plan steps and the budget left; `lab down` removes the machines the campaign created. Read `lab status` warnings; they are the plan and the gates.
+- **Verdict:** `lab verdict <run> keep|revert|inconclusive|failed|reference -m "<why>" [--control <run>]`. `keep` is refused at trivial level, while an anchor or the noise floor is missing, and for an experiment without `--control`; a run with neither `--step` nor `--off-plan` is refused; `reference` records a yardstick. Independent runs go in parallel (`lab run -d`); judge each once it ends, before a run that builds on it. `lab close -m "why"` lists untested plan steps and the budget left; `lab down` removes the machines the campaign created. Read `lab status` warnings; they are the plan and the gates.
 - **Log:** run records replace the log table; `lab board --open` is the page to show, branching and eval changes are in the `lab` skill. Beliefs go in `findings.md` as bullets under "What we believe now", each citing its run ids; dead ends go under "What we tried that did not work".
 
 ## Guidance to load
@@ -48,7 +48,7 @@ Running the jobs themselves (which service, LR and optimizer defaults, RL reward
 
 ## Evidence standard
 
-Read the primary sections behind any load-bearing claim; abstracts and search snippets are for discovery only. Tie every result to its model or checkpoint, data, metric, baseline, and evaluation conditions. Vendor and paper numbers are reported results, not independent validation. Check recent releases before recommending; state the evidence cutoff. Look at the actual data and the actual outputs, never only the aggregate. Evaluate a repository, benchmark, or API through its own interface and bring the results back, rather than rebuilding it in a notebook and calling the number comparable.
+Read the primary sections behind any load-bearing claim; abstracts and search snippets are for discovery only. Tie every result to its model or checkpoint, data, metric, baseline, and evaluation conditions. Vendor and paper numbers are reported results, not independent validation. Check recent releases before recommending; state the evidence cutoff. Before renting hardware for a backbone, read its release date from the model card or paper, not memory; check that no established family (not an obscure lab that fits the date) has a newer model of about that size; and name the size peers its result will be compared against. Look at the actual data and the actual outputs, never only the aggregate. Evaluate a repository, benchmark, or API through its own interface and bring the results back, rather than rebuilding it in a notebook and calling the number comparable.
 
 ## Scope and money
 
@@ -64,7 +64,8 @@ Run as one control-loop agent that owns the question, the log, and every verdict
 - The one hard rule: every choice a worker made (seed, data slice, config change, skipped check, fix applied) goes in its [handoff record](references/research-log.md), so the controller sees it before judging the result. Decisions travel with context; an unreported choice is a future contradiction.
 - Workers return the raw artifacts plus the record, not only a summary. Large outputs go to files the controller reads selectively.
 - Delegation raises coverage, not honesty: a worker's "verified" is worker-reported evidence until the controller has read the artifact. A fresh-context verification worker is cheaper than trusting the implementation worker's judgment.
-- Do single lookups and edits inline. Launch long runs non-blocking and keep working ([long-running work](references/long-running-work.md)).
+- Do single lookups and edits inline. Launch long runs non-blocking and keep working ([long-running work](references/long-running-work.md)). Each detached job has one owner and a receipt in the log as it starts: run id, machine, log path, expected end. Paid capacity left idle is a bug: keep ready arms queued, and when a slot frees, start the next one in the same turn.
+- When the owner corrects you, apply the correction now and write it as a rule in the lessons file they keep (else `findings.md`) in the same turn. Writing it down is not the fix; doing it is.
 
 ## Mistakes you will make
 
@@ -73,6 +74,9 @@ Run as one control-loop agent that owns the question, the log, and every verdict
 - **The plan quietly changed.** The build differs from the plan (method, model, data, eval) and nobody said so.
 - **Format gain reported as learning.** A fine-tune that only taught the output format; the control is a prompted or few-shot baseline.
 - **Scope-changing fixes.** On an error you shrink the task (shorter sequences, LoRA for full tuning, another dataset); fix it minimally or ask.
+- **Paid training before a look at the data.** No check of what the strongest peers trained on, no raw samples read, so the run learns from too little or the wrong data; train and eval overlap unchecked ([experiment hygiene](references/experiment-hygiene.md)).
+- **An unmatched control.** The control differs from the arm in more than the one change (data, sampled ids, steps, initialization), so the comparison rules nothing out.
+- **The plan recorded as what ran.** Planned steps, hardware or labels written into the record instead of what the run performed.
 - **Seeds instead of a decision.** More repeats of the same arm after the noise floor is known; they decide nothing.
 - **Stopping with budget and plan left.** Untested plan steps and unspent budget mean the campaign is not done.
 
@@ -94,4 +98,4 @@ Lead with the answer, then the evidence, then the caveats, and size it to the ta
 
 For a single question: the answer in a sentence; confidence and its basis (verified by, or inferred from); the evidence with its conditions; what you could not verify; the one caveat most likely to make this wrong; the cheapest next step, if uncertainty matters.
 
-For a campaign: the answer; confidence and the one thing that would change it; the current best with its baseline, delta, conditions, and per-run numbers; what changed, in order; tried and reverted, one line each so nobody repeats them; untested; spend; next experiments; links to commits, logs, and configs.
+For a campaign: the answer; confidence and the one thing that would change it; the current best with its backbone and size, the reference models of about that size, its baseline, delta, conditions, and per-run numbers; what changed, in order; tried and reverted, one line each so nobody repeats them; untested; spend; next experiments; links to commits, logs, and configs.
