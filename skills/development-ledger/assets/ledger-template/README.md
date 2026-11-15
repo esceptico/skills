@@ -25,6 +25,8 @@ Not yet consolidated.
 
 ## Decisions
 
+<!-- - **D-01 — the decision.** Origin: user or agent. Why: the reason. Evidence: path:line, command, or URL. -->
+
 - None adopted.
 
 ## Open questions

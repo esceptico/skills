@@ -63,7 +63,29 @@ def section(text: str, prefix: str) -> str | None:
 
 
 def split_row(line: str) -> list[str]:
-    return [cell.strip() for cell in line.strip().strip("|").split("|")]
+    """Split a table row into cells. A `|` inside a code span or written as `\\|` is cell text."""
+    body = line.strip()
+    body = body[1:] if body.startswith("|") else body
+    if body.endswith("|") and not body.endswith("\\|"):
+        body = body[:-1]
+    code_spans = body.count("`") % 2 == 0  # An unmatched backtick is not a code span.
+    cells, current, in_code, i = [], [], False, 0
+    while i < len(body):
+        char = body[i]
+        if body.startswith("\\|", i):
+            current.append("|")
+            i += 2
+            continue
+        if char == "`" and code_spans:
+            in_code = not in_code
+        if char == "|" and not in_code:
+            cells.append("".join(current).strip())
+            current = []
+        else:
+            current.append(char)
+        i += 1
+    cells.append("".join(current).strip())
+    return cells
 
 
 def table(text: str) -> list[dict[str, str]]:
@@ -104,9 +126,19 @@ class Ledger:
         rows = table(section(self.files.get("verification.md", ""), "Evidence") or "")
         return [row for row in rows if row.get("id", "").startswith("V-")]
 
+    def current_evidence(self) -> list[dict[str, str]]:
+        """Evidence rows that no later row replaces. A row replaces the earlier rows it names."""
+        rows = self.evidence()
+        replaced: set[str] = set()
+        for index, row in enumerate(rows):
+            earlier = {other["id"] for other in rows[:index]}
+            named = re.findall(r"\bV-\d+\b", " ".join(v for k, v in row.items() if k != "id"))
+            replaced.update(name for name in named if name in earlier)
+        return [row for row in rows if row["id"] not in replaced]
+
     def item_status(self) -> dict[str, str]:
         """Per item: todo, implemented, verified, or failing."""
-        evidence = self.evidence()
+        evidence = self.current_evidence()
         status = {}
         for item in self.items():
             results = [row.get("result", "").lower() for row in evidence
@@ -126,10 +158,12 @@ class Ledger:
             return None
         if git(self.path, "cat-file", "-e", f"{self.revision}^{{commit}}") is None:
             return ["<recorded revision not found in this repository>"]
-        changed = git(Path(top), "diff", "--name-only", self.revision, "HEAD")
+        # Compare with the working tree, so uncommitted and untracked files count too.
+        changed = git(Path(top), "diff", "--name-only", self.revision) or ""
+        untracked = git(Path(top), "ls-files", "--others", "--exclude-standard") or ""
+        names = list(dict.fromkeys(changed.splitlines() + untracked.splitlines()))
         # Ledger edits, this one's or another's, are not code drift.
-        return [name for name in (changed or "").splitlines()
-                if not is_ledger(Path(top) / Path(name).parent / "README.md")]
+        return [name for name in names if not is_ledger(Path(top) / Path(name).parent / "README.md")]
 
     def updated(self) -> str:
         if git(self.path, "status", "--porcelain", "--", "."):
@@ -161,7 +195,8 @@ class Ledger:
             if len(text.splitlines()) > limit:
                 warnings.append(f"{name}: over {limit} lines; consolidate")
 
-        changed = self.drift()
+        # A complete ledger describes the code at its recorded revision. Later changes are not drift.
+        changed = None if self.state == "complete" else self.drift()
         if changed:
             shown = ", ".join(changed[:5]) + (" …" if len(changed) > 5 else "")
             warnings.append(f"{plural(len(changed), 'file')} changed since {self.revision[:12]}: {shown}; "
@@ -176,10 +211,15 @@ class Ledger:
             warnings.append(f"checked without passing evidence: {', '.join(unproven)}")
         if self.state == "complete":
             failing = [key for key, value in statuses.items() if value == "failing"]
-            open_rows = [row["id"] for row in self.evidence() if row.get("result", "").lower() != "pass"]
+            open_rows = [row["id"] for row in self.current_evidence() if row.get("result", "").lower() != "pass"]
             if failing or open_rows:
                 warnings.append(f"complete with failing or open evidence ({', '.join(failing + open_rows)}); "
                                 "record the gaps the user accepted")
+            todo = [key for key, value in statuses.items() if value == "todo"]
+            # A research-only ledger can end with every proposed item unchecked.
+            if todo and len(todo) < len(statuses):
+                warnings.append(f"complete with unfinished items ({', '.join(todo)}); "
+                                "finish them or record the gaps the user accepted")
         return errors, warnings
 
 
@@ -261,7 +301,7 @@ def cmd_list(args: argparse.Namespace) -> int:
         return 0
     for ledger in ledgers:
         changed = ledger.drift()
-        drift = "?" if changed is None else f"{len(changed)} changed"
+        drift = "-" if ledger.state == "complete" else "?" if changed is None else f"{len(changed)} changed"
         next_action = plain(section(ledger.readme, "Next action") or "") or "-"
         print(f"{ledger.state or '?':<13} {ledger.updated():<12} {drift:<11} {os.path.relpath(ledger.path)}")
         print(f"{'':<13} next: {next_action}")
@@ -303,6 +343,9 @@ def cmd_sync(args: argparse.Namespace) -> int:
             raise SystemExit(f"README.md: no '{label}' row in the Status table")
     readme.write_text(text, encoding="utf-8")
     print(f"Synced to {revision[:12]}")
+    uncommitted = Ledger(path).drift()
+    if uncommitted:
+        print(f"NOTE: {plural(len(uncommitted), 'uncommitted file')} still count as changed until committed")
     return 0
 
 

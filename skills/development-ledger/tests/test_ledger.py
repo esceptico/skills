@@ -85,6 +85,53 @@ class LedgerTests(unittest.TestCase):
         self.edit('README.md', '| researching |', '| complete |')
         self.assertIn('failing or open evidence', self.check().stdout)
 
+    def test_pipe_in_a_code_span_stays_in_its_cell(self):
+        self.edit('implementation.md', '- [ ] **I-01', '- [x] **I-01')
+        self.edit('verification.md', '| --- | --- | --- | --- | --- | --- |',
+                  '| --- | --- | --- | --- | --- | --- |\n| V-01 | I-01 | `git log | head -1` | a \\| b | a | pass |')
+        result = self.check()
+        self.assertNotIn('Result should be', result.stdout)
+        self.assertNotIn('without passing evidence', result.stdout)
+
+    def test_later_row_replaces_the_failed_row_it_names(self):
+        rows = ('| --- | --- | --- | --- | --- | --- |\n| V-01 | I-01 | test | ok | broke | fail |'
+                '\n| V-02 | I-01 | test, re-run of V-01 | ok | ok | pass |')
+        self.edit('implementation.md', '- [ ] **I-01', '- [x] **I-01')
+        self.edit('verification.md', '| --- | --- | --- | --- | --- | --- |', rows)
+        self.edit('README.md', '| researching |', '| complete |')
+        self.assertIn('0 warning(s)', self.check().stdout)
+
+    def test_unrelated_pass_does_not_hide_a_fail(self):
+        rows = ('| --- | --- | --- | --- | --- | --- |\n| V-01 | I-01 | test | ok | broke | fail |'
+                '\n| V-02 | I-01 | lint | ok | ok | pass |')
+        self.edit('verification.md', '| --- | --- | --- | --- | --- | --- |', rows)
+        self.edit('README.md', '| researching |', '| complete |')
+        self.assertIn('failing or open evidence (I-01, V-01)', self.check().stdout)
+
+    def test_uncommitted_and_untracked_code_is_drift(self):
+        (self.repo / 'app.py').write_text('x = 1\n')
+        self.assertIn('1 file changed since', self.check().stdout)
+        self.git('add', '-A')
+        self.git('commit', '-qm', 'code')
+        (self.repo / 'app.py').write_text('x = 2\n')
+        self.assertIn('still count as changed', run('sync', str(self.ledger), cwd=self.repo).stdout)
+        self.assertIn('1 file changed since', self.check().stdout)
+
+    def test_complete_ledger_has_no_drift_warning(self):
+        (self.ledger / 'implementation.md').unlink()
+        (self.ledger / 'verification.md').unlink()
+        self.edit('README.md', '| researching |', '| complete |')
+        (self.repo / 'app.py').write_text('x = 1\n')
+        self.assertIn('0 warning(s)', self.check().stdout)
+
+    def test_complete_with_unfinished_items_warns(self):
+        self.edit('implementation.md', '- [ ] **I-01 — Replace with concrete work**',
+                  '- [x] **I-01 — done**\n- [ ] **I-02 — not done**')
+        self.edit('verification.md', '| --- | --- | --- | --- | --- | --- |',
+                  '| --- | --- | --- | --- | --- | --- |\n| V-01 | I-01 | test | ok | ok | pass |')
+        self.edit('README.md', '| researching |', '| complete |')
+        self.assertIn('complete with unfinished items (I-02)', self.check().stdout)
+
     def test_research_only_completion_is_valid(self):
         (self.ledger / 'implementation.md').unlink()
         (self.ledger / 'verification.md').unlink()
